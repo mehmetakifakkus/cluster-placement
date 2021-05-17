@@ -11,7 +11,6 @@ class Chromosome{
         this.chromosome = [];
         this.length = length;
         this.totalArea = 0;
-        this.totalInverseRatio = 0;
         this.fitnessValue = 0;
         
         if(flag)
@@ -26,40 +25,7 @@ class Chromosome{
     }   
     
     initialize(){
-        let size_list = [   new Point(12,8), 
-                            new Point(12,4), 
-                            new Point(8,4),
-                            new Point(4,4),
-                            new Point(12,6),
-                            new Point(1,1),
-                            new Point(6,6),
-                            new Point(6,12),
-                            new Point(2,8),
-                            new Point(2,4)]
-
-
-        size_list = [   new Point(12,8), 
-                        new Point(12,4), 
-                        new Point(12,4), 
-                        new Point(8,8),
-                        new Point(8,4),
-                        new Point(8,4),
-                        new Point(8,12),
-                        new Point(6,12),
-                        new Point(4,8),
-                        new Point(4,8)]
         
-        size_list = [   new Point(12,8), 
-                        new Point(12,8), 
-                        new Point(12,8), 
-                        new Point(8,8),
-                        new Point(8,4),
-                        new Point(4,4),
-                        new Point(4,4),
-                        new Point(8,12),
-                        new Point(8,12),
-                        new Point(6,12)]
-
         // Create blocks
 
         // first place the first one to 0,0 location
