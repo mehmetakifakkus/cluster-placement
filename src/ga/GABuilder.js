@@ -9,15 +9,15 @@ class GABuilder{
         this.genePool = [];
     }
 
-    initializeGA(poolSize, chromosomeLength, file_list){
+    initializeGA(poolSize, chromosomeLength, size_list){
 
         this.selectionNo = 0;
         this.genePool = [];
         this.poolSize = poolSize;
         this.length = chromosomeLength;
 
-        let initialChromosome = new Chromosome(10); // initialize it
-        initialChromosome.initialize(file_list);
+        let initialChromosome = new Chromosome(chromosomeLength); // initialize it
+        initialChromosome.initialize(size_list);
         this.genePool.push(initialChromosome)
 
         // create the pool
@@ -60,18 +60,6 @@ class GABuilder{
         
         console.log("mutation took " + (t1 - t0).toFixed(3) + " milliseconds.")
         console.log(this.selectionNo, 'th chromosome mutated')
-    }
-    
-    collisionRemover(){
-        var t0 = performance.now();
-    
-        let ch = this.genePool[this.selectionNo];
-        ch.noCollision();
-        ch.redraw(true);
-        // console.log(this.selectionNo, ' collision removed')
-    
-        var t1 = performance.now()
-        console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.")
     }
 }
 export default new GABuilder();

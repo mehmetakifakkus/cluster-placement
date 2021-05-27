@@ -24,10 +24,11 @@ class Chromosome{
         this.totalInverseRatio = totalInverseRatio;
     }   
     
-    initialize(){
+    initialize(size_list){
         
         // Create blocks
 
+        console.log(size_list)
         // first place the first one to 0,0 location
         var b = new Block(this, size_list[0], new Point(0,0));
         b.placed = true;
@@ -46,10 +47,7 @@ class Chromosome{
 
     calculateAreas(){
         let ch = this.chromosome;
-
         ch.forEach( it => {this.totalArea += it.getArea()});
-        ch.forEach( it => {it.inverseRatio = this.totalArea / it.getArea()});
-        ch.forEach( it => {this.totalInverseRatio += it.inverseRatio}); 
     }
 
     sortByArea(type){
@@ -101,49 +99,13 @@ class Chromosome{
     mutate(type_){
         var type = type_ || 1;
         
-        if(type == 1)
-            this.mutate1();
-        else if(type == 2)
-            this.mutate2();
-        else if(type == 3)
-            this.mutate3();
-        else if(type == 4)
+        if(type == 4)
             this.mutate4();
         else if(type == 5)
             this.mutate5();
         else if(type == 6)
             this.mutate6(); // move the smallest 3
     }
-
-    // change positions of all genes a bit
-    mutate1(){
-        // iterate over all genes and change their positions a bit
-        for(var i = 1; i < this.chromosome.length; i++)
-        {
-            this.chromosome[i].changePosAbit();
-        };
-    }
-    
-    // randomly select some genes and change their positions a bit
-    mutate2(){
-        // generate random n numbers in range
-        var indexes = Util.getRandomIntN(0, this.chromosome.length, 5);
-        
-        indexes.forEach(it => {
-            if(it != 0)
-                this.chromosome[it].changePosAbit();
-        })    
-    }
-
-    // change positions with the amount which is inversely corralated with the area of the object
-    mutate3(){
-        this.chromosome.forEach((it, i) => {
-            let prob = it.getProbability();
-            if(i != 0)
-                it.changePosAbit(10 * this.length * prob);
-        })
-    }
-
 
     // change positions a bit according to topRight or bottomLeft
     mutate4(){
@@ -218,11 +180,17 @@ class Chromosome{
         });
 
         // let ratio = totalIndividialAreas / gr.bounds.area;
-        let ratio = totalIndividialAreas / r.area;
-        // console.log('number of segments:', aa.segments)
-        // gr.remove();
+        let f1 = totalIndividialAreas / r.area;
 
-        return ratio.toFixed(4);
+        let ratio = r.width / r.height;
+        let f2;
+        
+        if(ratio <= 2)
+            f2 = 100 - (2 - ratio) * 50;
+        else    
+            f2 = 100 - (ratio - 2) * 10;
+
+        return ((f1 + f2) / 2).toFixed(4);
     }
 
     clearPositions(){

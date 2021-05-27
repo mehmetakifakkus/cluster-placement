@@ -16,24 +16,18 @@ class App extends React.Component {
         
         var t0 = performance.now()
 
-        GABuilder.initializeGA(100, 10);
+        GABuilder.initializeGA(20, 10);
         
     
         var t1 = performance.now()
         console.log("initialization took " + (t1 - t0).toFixed(3) + " milliseconds.")
         GABuilder.genePool[0].draw(true);
         this.setState({ active_ch: 0}) 
-
     }
 
     mutate(type){
         GABuilder.mutate(type);
         this.setState({ active_ch: GABuilder.selectionNo }) 
-    }
-
-    collision(){
-        GABuilder.collisionRemover();
-        this.setState({ active_ch: GABuilder.selectionNo })
     }
 
     render() {
@@ -47,21 +41,6 @@ class App extends React.Component {
                     </Col>
                     <div className="col-md-5">
                         <h4>Available settings</h4><hr />
-                        
-                        <Row style={{"margin":"-8px 0px -10px 5px"}}>
-                          <p>Move 
-                          <a href="#" onClick={()=>{this.mutate(1)}} className="alert-link"> all </a> of the blocks,
-                          <a href="#" onClick={()=>{this.mutate(2)}} className="alert-link"> some </a> of the blocks, or
-                          <a href="#" onClick={()=>{this.mutate(3)}} className="alert-link"> move inversely corralated </a> with areas</p>
-                        </Row>
-
-                        <hr />
-                        <Row style={{"margin":"-8px 0px -10px 5px"}}>
-                        <p>To avoid colluded object,
-                             <a href="#" onClick={()=>{this.collision()}} className="alert-link"> collision remover </a> can be used. 
-                            It searchs for colluded object and try to move it to free space. 
-                        </p>
-                        </Row>
                         <hr />
                         <Row style={{"margin":"-8px 0px -10px 5px"}}>
                         <p> 

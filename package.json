@@ -5,6 +5,7 @@
   "dependencies": {
     "bootstrap": "^4.6.0",
     "jquery": "^3.6.0",
+    "mathjs": "^9.4.0",
     "paper": "0.12.5",
     "react": "^17.0.2",
     "react-bootstrap": "^1.5.2",
@@ -34,5 +35,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/mathjs": "^9.3.0"
   }
 }

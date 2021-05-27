@@ -155,6 +155,10 @@ class Block extends Rectangle{
             console.log(this.id, this.placed)
         }
 
+        this.drawing.onDoubleClick = (event) => {
+            console.log(this)
+        }
+
         // this.drawing.onMouseDrag = (event) =>{
         //     console.log(event.point)
         //     this.setPoint(event.point.x / environment.step, event.point.y / environment.step)
