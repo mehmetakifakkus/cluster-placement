@@ -1,6 +1,6 @@
 import paper from "paper";
 import {Point} from "../geometry/Point"
-const sizes = [1,2,3,4,6,8,12,16,24];
+
 const environment = new paper.Point(32, 30)
 
 function drawCoordinateSystem(width, height, step){
@@ -18,14 +18,6 @@ function drawCoordinateSystem(width, height, step){
             new paper.PointText({point: (new Point(i * step, 0)).add([-8, 12]), fontSize: '12px', fillColor: 'black', content: ' '+ i, opacity: 0.6});  
     }
     new paper.Layer();
-}
-    
-function getRandomSize(){
-        
-        var s1 = getRandomInt(0, sizes.length - 1);
-        var s2 = getRandomInt(0, sizes.length - 1);
-        
-        return new Point(sizes[s1], sizes[s2]);
 }
     
 function getRandomPos(){
@@ -71,5 +63,5 @@ function getRandomIntN(start, end, amount){
     return numbers;
 }
 
-export default {drawCoordinateSystem, getRandomPos, getRandomSize, getRandomInt, getRandomIntN, shuffle}
+export default {drawCoordinateSystem, getRandomPos, getRandomInt, getRandomIntN, shuffle}
     

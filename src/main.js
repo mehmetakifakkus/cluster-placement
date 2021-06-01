@@ -2,13 +2,14 @@ import paper from "paper";
 import Util from "./Utils/Utilities"
 import GABuilder from "./ga/GABuilder"
 import {File} from './File'
+import {Point} from './geometry/Point'
 import {StringCluster} from './Utils/StringCluster'
 
 var environment = new paper.Point(32, 30)
 var step = 20;
 
 let file_list = [ 
-    new File('design1.ai', 1200, 1500), 
+    new File('design1.ai', 1200, 1600), 
     new File('design2.ai', 2400, 1600), 
     new File('design3.ai', 120,80), 
     new File('renderdesign1.png', 800,800),
@@ -27,26 +28,21 @@ const initialize = function(){
 
     var t0 = performance.now();
     
-    GABuilder.initializeGA(poolSize, length, File.getSizeList(file_list));
+    let ga = GABuilder.initializeGA(poolSize, length, File.getSizeList(file_list));
     
     var t1 = performance.now()
     console.log("initialization took " + (t1 - t0).toFixed(3) + " milliseconds.")
     
-    GABuilder.genePool[0].draw(true);
+    ga.best().translate(new Point(0, 0));
 
+    ga = ga.evolve();
+    ga.draw(true);
 
     let clusters = new StringCluster(File.getNameList(file_list));
     console.log(clusters.arranged)
+
     // !TODO: sonrasinda paneller ile dosyalar var, once panelleri koy cluster icinde
 
-
-}
-
-const evaluate = function(){
-
-}
-
-const mutation = function(){
 
 }
 

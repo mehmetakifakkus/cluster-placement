@@ -63,6 +63,11 @@ class App extends React.Component {
                         <p>
                             <a href="#" className="alert-link" onClick={() => { this.mutate(6) }}>the last 3</a> 
                         </p>
+
+                        <br/>
+                        <p>
+                            <a href="#" className="alert-link" onClick={() => {GABuilder.evolve(); GABuilder.best().redraw(true)}}>evolve</a> 
+                        </p>
                         </Row>
                         
 

@@ -29,12 +29,14 @@ class Chromosome{
         // Create blocks
 
         console.log(size_list)
+
         // first place the first one to 0,0 location
         var b = new Block(this, size_list[0], new Point(0,0));
         b.placed = true;
+        
         this.chromosome.push(b);
         
-        for(var i=1; i < this.length; i++)
+        for(var i = 1; i < this.length; i++)
             this.chromosome.push(new Block(this, size_list[i])); // itself given as parent of the block
 
         this.calculateAreas();
@@ -71,6 +73,12 @@ class Chromosome{
         this.fitnessValue = this.fitnessFunction();    
     }
 
+    translate(vector){
+        this.chromosome.forEach(it => {
+            it.point = it.point.add(vector);
+        })
+    }
+
     remove(){
         for(var i = 0; i < this.chromosome.length; i++)
             this.chromosome[i].remove();
@@ -100,9 +108,9 @@ class Chromosome{
         var type = type_ || 1;
         
         if(type == 4)
-            this.mutate4();
+            this.mutate4(); // move all
         else if(type == 5)
-            this.mutate5();
+            this.mutate5(); // move half of the block
         else if(type == 6)
             this.mutate6(); // move the smallest 3
     }
@@ -180,7 +188,7 @@ class Chromosome{
         });
 
         // let ratio = totalIndividialAreas / gr.bounds.area;
-        let f1 = totalIndividialAreas / r.area;
+        let f1 = 100 * this.getArea() / r.area;
 
         let ratio = r.width / r.height;
         let f2;
@@ -190,7 +198,8 @@ class Chromosome{
         else    
             f2 = 100 - (ratio - 2) * 10;
 
-        return ((f1 + f2) / 2).toFixed(4);
+        // return f1;
+        return (0.6 * f1 +  0.4 * f2).toFixed(4);
     }
 
     clearPositions(){
