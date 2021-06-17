@@ -6,7 +6,7 @@ export function Sketch() {
     paper.install(window);
     paper.setup("paperCanvas");
 
-    initialize();
+    // initialize();
   };
 
   // Must return null

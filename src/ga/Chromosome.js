@@ -2,6 +2,9 @@ import paper from "paper";
 import Block from "./Block"
 import Util from "../Utils/Utilities"
 import {Point} from "../geometry/Point"
+import settings from '../Utils/Settings'
+
+const colors = ['red', 'green', 'blue', 'black', 'purple', 'brown', '#dddddd', '#444444', '#888888', '#bbbbbb', '#AB0902', '#104C90']
 
 
 class Chromosome{
@@ -24,20 +27,16 @@ class Chromosome{
         this.totalInverseRatio = totalInverseRatio;
     }   
     
-    initialize(size_list){
+    initialize(item_list){
         
-        // Create blocks
-
-        console.log(size_list)
-
         // first place the first one to 0,0 location
-        var b = new Block(this, size_list[0], new Point(0,0));
+        var b = new Block(this, item_list[0], new Point(0,0));
         b.placed = true;
         
         this.chromosome.push(b);
         
         for(var i = 1; i < this.length; i++)
-            this.chromosome.push(new Block(this, size_list[i])); // itself given as parent of the block
+            this.chromosome.push(new Block(this, item_list[i])); // itself given as parent of the block
 
         this.calculateAreas();
         this.sortByArea();
@@ -61,7 +60,8 @@ class Chromosome{
     }
 
     draw(beautify){
-        this.chromosome.forEach(it => {it.draw(beautify)})
+        let rand = Util.getRandomInt(0, 12);
+        this.chromosome.forEach(it => {it.draw(beautify, colors[rand % colors.length])})
     }
 
     redraw(beautify){
@@ -76,6 +76,14 @@ class Chromosome{
     translate(vector){
         this.chromosome.forEach(it => {
             it.point = it.point.add(vector);
+        })
+    }
+
+    move(vector){
+        let delta = vector.subtract(this.chromosome[0].point);
+
+        this.chromosome.forEach(it => {
+            it.point = it.point.add(delta);;
         })
     }
 
@@ -138,7 +146,10 @@ class Chromosome{
     }
 
     mutate6(ch){
-        for(var i = this.chromosome.length-3; i < this.chromosome.length; i++) // except the first one
+        let amount = parseInt(this.chromosome.length * 0.3);
+        amount = Math.max(1, amount); 
+
+        for(var i = amount; i < this.chromosome.length; i++) // except the first one
         {
             this.chromosome[i].changePosAbit2();
         }
@@ -158,7 +169,7 @@ class Chromosome{
     clone(){
         let ch = new Chromosome(10, false);
         let chromosome = this.chromosome.map((it)=>{
-            let b = new Block(ch, it.size, it.point);
+            let b = new Block(ch, it.content, it.point);
             b.inverseRatio = it.inverseRatio;
             return b;
         });
@@ -176,30 +187,32 @@ class Chromosome{
         let totalIndividialAreas = 0;
 
         // let gr = new paper.Group(); // create a paperjs group and get some statistics such as area of bounding box
-        let r = this.chromosome[0].rectangle;
+        let bbox = this.chromosome[0].rectangle;
         // let aa = this.chromosome[0].drawing;
 
 
         this.chromosome.forEach(it => {
             totalIndividialAreas += it.getArea();
             // gr.children.push(it.drawing);
-            r = r.unite(it.rectangle)
+            bbox = bbox.unite(it.rectangle)
             // aa = aa.unite(it.drawing)
         });
 
+        this.bbox = bbox;
         // let ratio = totalIndividialAreas / gr.bounds.area;
-        let f1 = 100 * this.getArea() / r.area;
+        let f1 = 100 * this.getArea() / bbox.area;
 
-        let ratio = r.width / r.height;
+        let ratio = bbox.width / bbox.height;
         let f2;
         
-        if(ratio <= 2)
-            f2 = 100 - (2 - ratio) * 50;
+        if(ratio <= 1.8)
+            f2 = 100 - (1.8 - ratio) * 50;
         else    
-            f2 = 100 - (ratio - 2) * 10;
+            f2 = 100 - (ratio - 1.8) * 10;
 
         // return f1;
-        return (0.6 * f1 +  0.4 * f2).toFixed(4);
+        console.log(settings.sliderValue)
+        return (((100 - settings.sliderValue) / 100) * f1 +  (settings.sliderValue / 100) * f2).toFixed(4);
     }
 
     clearPositions(){

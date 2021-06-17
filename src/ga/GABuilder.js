@@ -1,23 +1,28 @@
+import { Point } from "../geometry/Point";
 import Chromosome from "./Chromosome"
 
-class GABuilder{
+export class GABuilder{
     
-    constructor(){
+    constructor(poolSize, item_list){
+        if(typeof GABuilder.counter == 'undefined')
+            GABuilder.counter = 0;
+
+        this.id = GABuilder.counter++;
+
         this.selectionNo = 0;
-        this.poolSize = 0;
-        this.length = 0;
+        this.poolSize = poolSize;
         this.genePool = [];
+        this.initializeGA(item_list);
     }
 
-    initializeGA(poolSize, chromosomeLength, size_list){
+    initializeGA(item_list){
 
         this.selectionNo = 0;
         this.genePool = [];
-        this.poolSize = poolSize;
-        this.length = chromosomeLength;
+        this.length = item_list.length;
 
-        let initialChromosome = new Chromosome(chromosomeLength); // initialize it
-        initialChromosome.initialize(size_list);
+        let initialChromosome = new Chromosome(this.length); // initialize it
+        initialChromosome.initialize(item_list);
         // this.genePool.push(initialChromosome)
 
         // create the pool
@@ -77,7 +82,7 @@ class GABuilder{
         this.sortByFitness();
 
         // debug
-        console.log(this.genePool)
+        // console.log(this.genePool)
 
         return this.genePool[0];
     }
@@ -93,5 +98,9 @@ class GABuilder{
         console.log("mutation took " + (t1 - t0).toFixed(3) + " milliseconds.")
         console.log(this.selectionNo, 'th chromosome mutated')
     }
+
+    getSize(){
+        let temp = this.genePool[0].bbox;
+        return new Point(temp.width, temp.height);
+    }
 }
-export default new GABuilder();

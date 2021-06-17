@@ -2,46 +2,114 @@
 import paper from "paper";
 import { Button, Container, Row, Col } from 'reactstrap';
 import { Sketch } from './Sketch';
-import GABuilder from "./ga/GABuilder"
+import {GABuilder} from "./ga/GABuilder"
 import React from 'react';
+import {initialize, getGA, getClusters, draw} from "./main";
+
+import 'antd/dist/antd.css';
+import { Tree, Slider, Input} from 'antd';
+
+import settings from './Utils/Settings'
+settings.sliderValue = 80;
+
+const { TextArea } = Input;
+const defaultText = "design1.ai, 1200, 1600\n"+ 
+"design2.ai, 2400, 1600\n"+
+"design3.ai, 120, 80\n"+
+"renderdesign1.png, 800,800\n"+
+"renderdesign2.png, 400,400\n"+
+"renderdesign3.png, 1000,1000\n"+
+"renderdesign4.png, 1200,1200\n"+
+"sketchv1.jpeg, 800, 400\n"+
+"sketchv2.jpeg, 240,120\n"+
+"sketchv3.jpeg, 360,180";
+
+
 
 class App extends React.Component {
 
     state = {
-        active_ch: 0
+        active_ch: 0,
+        clusters: null,
+        selectedGA: getGA()
     }
 
-    initialize(){
-        paper.project.activeLayer.removeChildren();
+    getTreeData = () => {
         
-        var t0 = performance.now()
+        const traverse = (ga) => {
 
-        GABuilder.initializeGA(20, 10);
+            let layout = ga.best();
+
+            let obj = new Object();
+            obj.title = ga.title;
+            obj.key = ga.id;
+            obj.data = ga;
+            
+            obj.children = layout.chromosome.map( (it) => {
+                if(it.content instanceof GABuilder)
+                    return traverse(it.content);
+                else
+                    return null;
+            });
+
+            if(obj.children[0] == null)
+                obj.children = null
+
+            return obj;
+        }
+
+        let treeData = traverse(getGA());
+        console.log(treeData);
         
+        console.log(treeData.data)
+        this.setState({selectedGA: treeData.data});
+        this.setState({clusters: [treeData]});
+    }
+
+    onSelect = (selectedKeys, info) => {
+        paper.project.activeLayer.removeChildren();
+        console.log('selected', info.node.data);
+        draw(info.node.data)
     
-        var t1 = performance.now()
-        console.log("initialization took " + (t1 - t0).toFixed(3) + " milliseconds.")
-        GABuilder.genePool[0].draw(true);
-        this.setState({ active_ch: 0}) 
+        this.setState({selectedGA: info.node.data});
+        console.log(this.state.selectedGA)
+    }
+
+    getTextInput = (e) =>{
+        // console.log(e.target.value.split('\n'))
+        this.setState({textInput: e.target.value.split('\n')})
+    }
+
+    sliderChange = (value) => {
+        this.setState({sliderValue: value})
+        settings.sliderValue = value;
+        // console.log(value)
+    }
+
+    run = () => {
+        initialize(this.state.textInput || defaultText.split('\n'));
+        this.getTreeData();
     }
 
     mutate(type){
-        GABuilder.mutate(type);
-        this.setState({ active_ch: GABuilder.selectionNo }) 
+        getGA().mutate(type);
+        this.setState({ active_ch: getGA().selectionNo }) 
     }
 
     render() {
+        
         return (
             <Container style={{ padding: '1rem' }}>
+                <Sketch />
+                
+                    <h3 style={{"margin":"0px 0px 10px 0px"}}>Genetic Algorithm Solution for Block Placement</h3>
                 <Row>
-                    <h3 style={{"margin":"0px 0px 10px 10px"}}>Genetic Algorithm Solution for Block Placement</h3>
-                    
-                    <Col md={7}>
-                        <canvas id="paperCanvas" height="600" width="640" style={{ border: '2px solid black' }} />
-                    </Col>
-                    <div className="col-md-5">
-                        <h4>Available settings</h4><hr />
+                    <Col md={4}>
+                        <h5>Text List</h5>
+
+                        <TextArea rows={10} onChange={this.getTextInput} defaultValue={defaultText}/>
                         <hr />
+                        {/* <hr />
                         <Row style={{"margin":"-8px 0px -10px 5px"}}>
                         <p> 
                              <a href="#" onClick={()=>{this.initialize()}} className="alert-link"> Reinitialize </a> the gene pool.
@@ -63,47 +131,51 @@ class App extends React.Component {
                         <p>
                             <a href="#" className="alert-link" onClick={() => { this.mutate(6) }}>the last 3</a> 
                         </p>
-
-                        <br/>
-                        <p>
-                            <a href="#" className="alert-link" onClick={() => {GABuilder.evolve(); GABuilder.best().redraw(true)}}>evolve</a> 
-                        </p>
                         </Row>
-                        
-
+                    */}
+                        <Slider defaultValue={80} onAfterChange={this.sliderChange} marks={{0: 'Fill', 100: '2x1'}}/>
                         <hr/>
-                        <Row style={{"margin":"-8px 0px -10px 5px"}}>
-                            <div className="col-md-2">
-                                <button type="button" id="prev" className="btn btn-warning btn-sm" onClick={() => { GABuilder.prev(); this.setState({ active_ch: GABuilder.selectionNo }) }}>prev</button>
-                            </div>
-                            <span id="info_chromosome">Chr. no: {this.state.active_ch}</span>
-                            <div className="col-md-2">
-                                <button type="button" id="next" className="btn btn-warning btn-sm" onClick={() => { GABuilder.next(); this.setState({ active_ch: GABuilder.selectionNo }) }}>next</button>
-                            </div>
-                                <br/>
-                                <br/>
-                              <p>We can have info of <a href="#" onClick={()=>{console.log(GABuilder.genePool[GABuilder.selectionNo]);}} className="alert-link"> active </a> chromosome.
-                                </p>          
-                        </Row>
+                        <Tree
+                            autoExpandParent
+                            defaultExpandAll
+                            onSelect={this.onSelect}
+                            treeData={this.state.clusters}
+                        />
 
+                       
+                        <Row style={{"margin":"40px 30px -10px 0px"}}>
+                            
+                            <button type="button" id="run" className="btn btn-warning btn-sm" 
+                                onClick={() => {this.run()}}>RUN</button>
+                                
+                                {/* <br/>
+                              <p>We can have info of <a href="#" onClick={()=>{console.log(getGA()?.genePool[GABuilder.selectionNo]);  this.getTreeData();}} className="alert-link"> active </a> chromosome.</p>           */}
+                        </Row>
                         
-
                         <br />
-                        <h4>Best Item Statistics</h4> <hr />
+                    </Col>
 
+                    <Col md={8}>
+                        <canvas id="paperCanvas" height="600" width="640" style={{ border: '2px solid black' }} />
+                        <span style = {{margin: '10px'}}/>
                         <Row>
-                            <div className="col-md-6">
-                                <b><u>General:</u></b><br/>
-                                <p id="info_fitness">Fitness value: { (GABuilder.genePool[this.state.active_ch])? GABuilder.genePool[this.state.active_ch].fitnessValue : ''}</p>
+                            <div className="col-md-2">
+                                <button type="button" id="prev" className="btn btn-warning btn-sm" onClick={() => { this.state.selectedGA.prev(); this.setState({ active_ch: this.state.selectedGA.selectionNo }) }}>prev</button>
                             </div>
-                      
+                            <div className="col-md-4">
+                                <span id="info_chromosome">Chr. no: {this.state.selectedGA?.selectionNo}</span>
+                                <p id="info_fitness">Cluster fitness value: { this.state.selectedGA?.genePool[this.state.selectedGA.selectionNo].fitnessValue}</p>
+                                {/* <span id="info_chromosome">Chr. no: {this.state.active_ch}</span> */}
+                            </div>
+                            <div className="col-md-2">
+                                <button type="button" id="next" className="btn btn-warning btn-sm" onClick={() => { this.state.selectedGA.next(); this.setState({ active_ch: this.state.selectedGA.selectionNo }) }}>next</button>
+                            </div>
                         </Row>
-                        <br />
-                    </div>
-
+                    </Col>
+                    
                 </Row>
 
-                <Sketch />
+                
 
             </Container>
 

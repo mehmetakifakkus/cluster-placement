@@ -3,25 +3,34 @@ import paper from "paper";
 import Util from "../Utils/Utilities";
 import {Point} from "../geometry/Point";
 import {Rectangle} from "../geometry/Rectangle";
+import { File } from "../File";
 
 const step = 20;
 const environment = new Point(32, 30)
-const colors = ['red', 'green', 'blue', 'black', 'purple', 'brown', '#dddddd', '#444444', '#888888', '#bbbbbb', '#AB0902', '#104C90']
 
 
 class Block extends Rectangle{
 
-    constructor(parent, size_, point_){
+    constructor(parent, item, point_){
         
         if(typeof Block.counter == 'undefined')
             Block.counter = 0;
         
         let point = point_ || (Util.getRandomPos());
-        let size = size_ || (Util.getRandomSize());
+
+        const getAppropriateSize = (item) =>{
+            if(item instanceof File)
+                return item.simplified;
+            else // GABuilder
+                return item.getSize();
+        }
+        let size = getAppropriateSize(item);  // || (Util.getRandomSize());
         
         super(point, size);
 
         this.id = Block.counter++; //  newly created block will have different id
+        
+        this.content = item;
 
         this.parent = parent;
         this.inverseRatio = 0;
@@ -31,6 +40,8 @@ class Block extends Rectangle{
         this.topRightChild = null;
 
         this.drawing = null;
+
+        
     }
 
     getArea(){
@@ -129,12 +140,12 @@ class Block extends Rectangle{
     }
 
 
-    draw(beautify = false){
+    draw(beautify = false, color){
 
         var block, textCenter, textId;
         if(beautify)
         {
-            block = new paper.Path.Rectangle({point: this.point.multiply(step), size: this.size.multiply(step), strokeWidth: 2, strokeColor: 'black', fillColor: colors[this.id % colors.length]})
+            block = new paper.Path.Rectangle({point: this.point.multiply(step), size: this.size.multiply(step), strokeWidth: 2, strokeColor: 'black', fillColor: color})
     
             var fontSize = Math.min(this.size.x, this.size.y) * step * 0.75;
             var textCenter = new paper.PointText({fontSize: fontSize/2 + 'px', fillColor: '#dddddd', content: this.size.x + 'x' + this.size.y, opacity: 1});  
@@ -156,7 +167,7 @@ class Block extends Rectangle{
         }
 
         this.drawing.onDoubleClick = (event) => {
-            console.log(this)
+            console.log(this.id, this.content)
         }
 
         // this.drawing.onMouseDrag = (event) =>{

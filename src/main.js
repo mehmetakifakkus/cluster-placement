@@ -1,9 +1,11 @@
 import paper from "paper";
 import Util from "./Utils/Utilities"
-import GABuilder from "./ga/GABuilder"
+import {GABuilder} from "./ga/GABuilder"
 import {File} from './File'
 import {Point} from './geometry/Point'
 import {StringCluster} from './Utils/StringCluster'
+import {FileCluster} from './Utils/FileCluster'
+import Chromosome from "./ga/Chromosome";
 
 var environment = new paper.Point(32, 30)
 var step = 20;
@@ -15,35 +17,169 @@ let file_list = [
     new File('renderdesign1.png', 800,800),
     new File('renderdesign2.png', 400,400),
     new File('renderdesign3.png', 1000,1000),
-    new File('sketch1.jpeg', 800,400),
-    new File('sketch2.jpeg', 240,120),
-    new File('sketch3.jpeg', 360,180)
+    new File('renderdesign4.png', 1200,1200),
+    // new File('renderdesign5.png', 800,800),
+    // new File('renderdesign6.png', 400,400),
+    // new File('renderdesign7.png', 1000,1000),
+    // new File('renderdesign8.png', 1200,1200),
+    // new File('renderdesign9.png', 800,800),
+   
+    new File('sketchv1.jpeg', 800,400),
+    new File('sketchv2.jpeg', 240,120),
+    new File('sketchv3.jpeg', 360,180),
+    // new File('sketchoutput1.jpeg', 800,400),
+    // new File('sketchoutput2.jpeg', 240,120),
+    // new File('sketchoutput3.jpeg', 360,180)
 ]
 
-const initialize = function(){
+let ga = null;
+let clusters = null;
+
+const initialize = function(file_text_list){
 
     var poolSize = 10;
-    var length = file_list.length;
+    
+    paper.project.activeLayer.removeChildren();
+
     Util.drawCoordinateSystem(environment.x, environment.y, step);
 
+    
+    // let ga = new GABuilder(poolSize, file_list);
+    // var t1 = performance.now()
+    // console.log("initialization took " + (t1 - t0).toFixed(3) + " milliseconds.")
+    
+    // ga.best().move(new Point(5, 5));
+    
+    // ga.evolve();
+    // console.log(ga)
+    // ga.best().draw(true);
+    
+    // let clusters = new StringCluster(File.getNameList(file_list));
+    
+    clusters = new FileCluster(generateFileList(file_text_list));
+    console.log(clusters.arranged)
+    printMap(clusters.arranged)
+    
+    // !TODO: sonrasinda paneller ile dosyalar var, once panelleri koy cluster icinde
+    
     var t0 = performance.now();
-    
-    let ga = GABuilder.initializeGA(poolSize, length, File.getSizeList(file_list));
-    
+    ga = fileGA(clusters.arranged, 'root')
+    console.log(ga)
+
+    for (let step = 0; step < 5; step++) {
+        ga.evolve();
+    }
+
+    draw(ga, new Point(0,0));
+
     var t1 = performance.now()
     console.log("initialization took " + (t1 - t0).toFixed(3) + " milliseconds.")
+}
+
+function generateFileList(file_text_list){
+    return file_text_list.map((it) => {
+        let splitted = it.split(',');
+        return new File(splitted[0], splitted[1], splitted[2]);
+    })
+}
+
+function draw(ga, point =  new Point(0,0)){
+
+    const isChildFile = (item) =>{
+        return item.chromosome[0].content instanceof File;
+    }
     
-    ga.best().translate(new Point(0, 0));
+    let layout = ga.best();
+    // console.log(layout)
+    
+    if(layout instanceof Chromosome)
+    {
+        // console.log(layout, ga)
+        if(isChildFile(layout))
+        {
+            layout.move(point)
+            layout.draw(true);
+        }
+    }
 
-    ga = ga.evolve();
-    ga.draw(true);
+    layout.chromosome.forEach((it)=>{
+        
+        if(it.content instanceof GABuilder)
+        {
+            // console.log(it.content, it.point)
+            draw(it.content, point.add(it.point))
+        }
+    })
+}
 
-    let clusters = new StringCluster(File.getNameList(file_list));
-    console.log(clusters.arranged)
+function fileGA(map, title){
 
-    // !TODO: sonrasinda paneller ile dosyalar var, once panelleri koy cluster icinde
+    let item_list = [];
+    for (let [key, value] of map) {
+        
+        if(value instanceof Map)
+        {
+            item_list.push(fileGA(value, key))
+            // console.log(key);
+        }
+        else
+        {
+            // burada biriktir ve harf sirasina koy
+            // sonrasinda GA tarafina yolla
+            // console.log(value);
+            item_list.push(value);
+        }
+    }
 
+    // en basta harf sirasina koymak sorunu büyük oranda çözebilir
+    //items.sort( function(a, b){return a.localeCompare(b)});
+    // console.log(item_list)
+    
+
+    if(item_list.length > 1)
+    {
+        let ga = new GABuilder(10, item_list);
+        ga.title = title;
+        return ga;
+    }
+    else 
+        return item_list[0];
+    
 
 }
 
-export {initialize};
+function printMap(map){
+
+    for (let [key, value] of map) {
+        
+        if(value instanceof Map)
+        {
+            printMap(value)
+            console.log(key);
+        }
+        else
+            console.log(key, value);
+            // burada biriktir ve harf sirasina koy
+            // sonrasinda GA tarafina yolla
+    }
+
+    if(map.size > 1)
+        console.log('biriken kisimlar GA ya gonderildi')
+}
+
+function getGA(){
+    return ga;
+}
+
+function getClusters(){
+    // return new Promise((resolve) => {
+    //     if(clusters)
+    //     {
+    //         resolve();
+    //         return clusters;
+    //     }
+    // })
+    return clusters;
+}
+
+export {initialize, draw, getGA, getClusters};

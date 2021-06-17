@@ -17,7 +17,7 @@ export class StringCluster {
         if (Array.isArray(value)) {
           value.forEach((name) => {
             var firstChar = name[0];
-            var oldList = subMap.get(firstChar) || [];
+            var oldList = subMap.get(firstChar) || []; // split the string as the first character and the rest
             var rest = name.substr(1);
             //console.log(firstChar, rest);
   
@@ -31,6 +31,7 @@ export class StringCluster {
   
         //console.log("aaa", subMap);
   
+        // if child is an array consisting one child, destruct the array
         for (let [key, value] of subMap) {
           // console.log(key + " = " + value + "  " + Array.isArray(value));
           if (value.length == 1) subMap.set(key, value[0]);
@@ -48,30 +49,7 @@ export class StringCluster {
   
       return map;
     }
-  
-    print(map) {
-      // console.log("--started--");
-      for (let [key, value] of map) {
-        // if(value)
-        // {
-        // console.log(key);
-        // console.log(key)
-  
-        // console.log("key", key, "value", value);
-        if (value instanceof Map) this.print(value);
-  
-        if (map.size == 1) {
-          let dd = getFirstValueofMap(value);
-          map.delete(key);
-          map.set(key + dd.key, dd.value);
-          // console.log(dd);
-        }
-        // }
-      }
-      // console.log("----");
-    }
   }
-  // print(nameMap);
   
   function getFirstValueofMap(map) {
     var key, value;
@@ -122,4 +100,6 @@ export class StringCluster {
   
     return newMap;
   }
+
+
   

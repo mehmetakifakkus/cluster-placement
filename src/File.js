@@ -30,16 +30,18 @@ export class File{
 
         const result = gcd(this.width, this.height);
         
-        this.simplified  = {width: this.width / result, height: this.height / result};
+        this.simplified  = new Point(this.width / result, this.height / result);
 
         if(this.simplified.width > 10 || this.simplified.height > 10)
         {
-            this.simplified = getClosestRatio10(this.width, this.height);
+            let closest = getClosestRatio10(this.width, this.height);
+            this.simplified = new Point(closest.width, closest.height);
         }
 
         if(this.simplified.width > 5 || this.simplified.height > 5)
         {
-            this.simplified5 = getClosestRatio5(this.width, this.height);
+            let closest = getClosestRatio5(this.width, this.height);
+            this.simplified5 = new Point(closest.width, closest.height);
         }
     }
 
