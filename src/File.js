@@ -45,11 +45,6 @@ export class File{
         }
     }
 
-    static getSizeList(file_list){
-        return file_list.map(it =>{
-            return new Point(it.simplified.width, it.simplified.height);
-        })
-    }
 
     static getNameList(file_list){
         return file_list.map(it => it.name)
