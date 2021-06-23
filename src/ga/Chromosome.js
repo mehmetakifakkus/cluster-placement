@@ -207,11 +207,11 @@ class Chromosome{
         
         if(ratio <= 1.8)
             f2 = 100 - (1.8 - ratio) * 50;
-        else    
+        else
             f2 = 100 - (ratio - 1.8) * 10;
 
         // return f1;
-        console.log(settings.sliderValue)
+        // console.log(settings.sliderValue)
         return (((100 - settings.sliderValue) / 100) * f1 +  (settings.sliderValue / 100) * f2).toFixed(4);
     }
 
