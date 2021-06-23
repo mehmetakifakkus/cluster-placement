@@ -76,16 +76,22 @@ const initialize = function(file_text_list){
     console.log("initialization took " + (t1 - t0).toFixed(3) + " milliseconds.")
 }
 
+// get file list from the textBox 
+// and create the File object
 function generateFileList(file_text_list){
     return file_text_list.map((it) => {
         let splitted = it.split(',');
-        return new File(splitted[0], splitted[1], splitted[2]);
+        if(splitted.length === 3)
+            return new File(splitted[0], splitted[1], splitted[2]);
+        else    
+            return new File(splitted[0], 1, 1);
+            
     })
 }
 
 function draw(ga, point =  new Point(0,0)){
 
-    const isChildFile = (item) =>{
+    const isChildFile = (item) => {
         return item.chromosome[0].content instanceof File;
     }
     
@@ -124,17 +130,13 @@ function fileGA(map, title){
         }
         else
         {
-            // burada biriktir ve harf sirasina koy
-            // sonrasinda GA tarafina yolla
-            // console.log(value);
+            // burada biriktir ve harf sirasina koy, sonrasinda GA tarafina yolla
             item_list.push(value);
         }
     }
 
     // en basta harf sirasina koymak sorunu büyük oranda çözebilir
     //items.sort( function(a, b){return a.localeCompare(b)});
-    // console.log(item_list)
-    
 
     if(item_list.length > 1)
     {
