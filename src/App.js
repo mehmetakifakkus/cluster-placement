@@ -10,6 +10,8 @@ import 'antd/dist/antd.css';
 import { Tree, Slider, Input} from 'antd';
 
 import settings from './Utils/Settings'
+var path = require('path')
+
 settings.sliderValue = 80;
 
 const { TextArea } = Input;
@@ -19,6 +21,53 @@ const defaultText = "design1.ai, 1200, 1600\n"+
 "renderdesign1.png, 800,800\n"+
 "renderdesign2.png, 400,400\n"+
 "renderdesign3.png, 1000,1000\n"+
+"renderdesign4.png, 1200,1200\n"+
+"sketchv1.jpeg, 800, 400\n"+
+"sketchv2.jpeg, 240,120\n"+
+"sketchv3.jpeg, 360,180";
+
+const defaultText1 = "design1.ai\n"+ 
+"design2.ai\n"+
+"design3.ai\n"+
+"renderdesign1.png, 800,800\n"+
+"renderdesign2.png, 400,400\n"+
+"renderdesign3.png, 1000,1000\n"+
+"renderdesign4.png, 1200,1200\n"+
+"sketchv1.jpeg, 800, 400\n"+
+"sketchv2.jpeg, 240,120\n"+
+"sketchv3.jpeg, 360,180";
+
+const defaultText2 = "idea.docx\n"+ 
+"5653.jpeg\n"+
+"5654.jpeg\n"+
+"5655.jpeg\n"+
+"5656.jpeg\n"+
+"5657.jpeg\n"+
+"5658.jpeg\n"+
+"5659.jpeg\n"+
+"5660.jpeg\n"+
+"5661.jpeg\n"+
+"5662.jpeg\n"+
+"5663.psd\n" +
+"5660_e1.psd\n"+
+"5660_e2.psd\n"+
+"5660_e3.psd\n"+
+"5660_e4.psd\n"+
+// "5660_e5.psd\n"+
+// "5660_e6.psd\n"+
+// "5660_e7.psd\n"+
+// "5660_e8.psd\n"+
+// "5660_e9.psd\n"+
+// "5660_e10.psd\n"+
+// "5660_e11.psd\n"+
+// "5660_e12.psd\n"+
+// "5660_e13.psd\n"+
+"model1.3dm\n"+
+"model2.3dm\n"+
+"model3.3dm\n"+
+"modelmanu1.3dm\n"+
+"modelmanu2.3dm\n"+
+"modelmanu3.3dm\n"+
 "renderdesign4.png, 1200,1200\n"+
 "sketchv1.jpeg, 800, 400\n"+
 "sketchv2.jpeg, 240,120\n"+
@@ -62,7 +111,7 @@ class App extends React.Component {
         console.log(treeData);
         
         console.log(treeData.data)
-        this.setState({selectedGA: treeData.data});
+        this.setState({selectedGA: treeData.data}); // auto select root cluster
         this.setState({clusters: [treeData]});
     }
 
