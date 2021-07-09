@@ -44,25 +44,7 @@ const initialize = function(file_text_list){
     Util.drawCoordinateSystem(environment.x, environment.y, step);
 
     
-<<<<<<< HEAD
     let ga = new GABuilder(poolSize, length, File.getSizeList(file_list));
-=======
-    // let ga = new GABuilder(poolSize, file_list);
-    // var t1 = performance.now()
-    // console.log("initialization took " + (t1 - t0).toFixed(3) + " milliseconds.")
-    
-    // ga.best().move(new Point(5, 5));
-    
-    // ga.evolve();
-    // console.log(ga)
-    // ga.best().draw(true);
-    
-    // let clusters = new StringCluster(File.getNameList(file_list));
-    
-    clusters = new FileCluster(generateFileList(file_text_list));
-    console.log(clusters.arranged)
-    printMap(clusters.arranged)
->>>>>>> numberedFiles_deneme
     
     // !TODO: sonrasinda paneller ile dosyalar var, once panelleri koy cluster icinde
     
