@@ -12,10 +12,10 @@ import { Tree, Slider, Input} from 'antd';
 import settings from './Utils/Settings'
 var path = require('path')
 
-settings.sliderValue = 80;
+settings.sliderValue = 40;
 
 const { TextArea } = Input;
-const defaultText = "design1.ai, 1200, 1600\n"+ 
+const defaultText2 = "design1.ai, 1200, 1600\n"+ 
 "design2.ai, 2400, 1600\n"+
 "design3.ai, 120, 80\n"+
 "renderdesign1.png, 800,800\n"+
@@ -37,7 +37,12 @@ const defaultText1 = "design1.ai\n"+
 "sketchv2.jpeg, 240,120\n"+
 "sketchv3.jpeg, 360,180";
 
-const defaultText2 = "idea.docx\n"+ 
+const defaultText = 
+// "idea.docx\n"+ 
+"P, models\n"+
+"P, renders\n"+
+"P, designs\n"+
+"5652.jpeg\n"+
 "5653.jpeg\n"+
 "5654.jpeg\n"+
 "5655.jpeg\n"+
@@ -53,25 +58,31 @@ const defaultText2 = "idea.docx\n"+
 "5660_e2.psd\n"+
 "5660_e3.psd\n"+
 "5660_e4.psd\n"+
-// "5660_e5.psd\n"+
-// "5660_e6.psd\n"+
+"5660_e5.psd\n"+
+"5660_e6.psd\n"+
 // "5660_e7.psd\n"+
 // "5660_e8.psd\n"+
 // "5660_e9.psd\n"+
 // "5660_e10.psd\n"+
 // "5660_e11.psd\n"+
 // "5660_e12.psd\n"+
-// "5660_e13.psd\n"+
-"model1.3dm\n"+
-"model2.3dm\n"+
-"model3.3dm\n"+
-"modelmanu1.3dm\n"+
-"modelmanu2.3dm\n"+
-"modelmanu3.3dm\n"+
-"renderdesign4.png, 1200,1200\n"+
+// "5661.psd\n"+
+// "5662.psd\n"+
+// "5663.psd\n"+
+// "model1.3dm\n"+
+// "model2.3dm\n"+
+// "model3.3dm\n"+
+// "modelmanu1.3dm\n"+
+// "modelmanu2.3dm\n"+
+// "modelmanu3.3dm\n"+
+// "renderdesign4.png, 1200,1200\n"+
 "sketchv1.jpeg, 800, 400\n"+
 "sketchv2.jpeg, 240,120\n"+
-"sketchv3.jpeg, 360,180";
+"sketchv3.jpeg, 360,180\n"+
+"selam.jpeg\n"+
+"selam1.jpeg\n"+
+"selam2.jpeg\n"+
+"selam3.jpeg";
 
 
 
@@ -101,8 +112,7 @@ class App extends React.Component {
                     return null;
             });
 
-            if(obj.children[0] == null)
-                obj.children = null
+            obj.children = obj.children.filter(it => it !== null)
 
             return obj;
         }
@@ -121,7 +131,7 @@ class App extends React.Component {
         draw(info.node.data)
     
         this.setState({selectedGA: info.node.data});
-        console.log(this.state.selectedGA)
+        // console.log(this.state.selectedGA)
     }
 
     getTextInput = (e) =>{
@@ -182,7 +192,7 @@ class App extends React.Component {
                         </p>
                         </Row>
                     */}
-                        <Slider defaultValue={80} onAfterChange={this.sliderChange} marks={{0: 'Fill', 100: '2x1'}}/>
+                        <Slider defaultValue={40} onAfterChange={this.sliderChange} marks={{0: 'Fill', 100: '2x1'}}/>
                         <hr/>
                         <Tree
                             autoExpandParent
@@ -205,7 +215,7 @@ class App extends React.Component {
                     </Col>
 
                     <Col md={8}>
-                        <canvas id="paperCanvas" height="600" width="640" style={{ border: '2px solid black' }} />
+                        <canvas id="paperCanvas" height="600" width="800" style={{ border: '2px solid black' }} />
                         <span style = {{margin: '10px'}}/>
                         <Row>
                             <div className="col-md-2">
