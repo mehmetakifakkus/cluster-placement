@@ -3,8 +3,6 @@ import Util from "./Utils/Utilities"
 import {GABuilder} from "./ga/GABuilder"
 import {File} from './File'
 import {Point} from './geometry/Point'
-import {StringCluster} from './Utils/StringCluster'
-import {FileCluster} from './Utils/FileCluster'
 import Chromosome from "./ga/Chromosome";
 
 var environment = new paper.Point(32, 30)
@@ -44,7 +42,7 @@ const initialize = function(file_text_list){
     Util.drawCoordinateSystem(environment.x, environment.y, step);
 
     
-    let ga = new GABuilder(poolSize, length, File.getSizeList(file_list));
+    let ga = new GABuilder(poolSize, File.getSizeList(file_list));
     
     // !TODO: sonrasinda paneller ile dosyalar var, once panelleri koy cluster icinde
     

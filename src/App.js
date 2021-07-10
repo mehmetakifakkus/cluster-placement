@@ -2,7 +2,7 @@
 import paper from "paper";
 import { Button, Container, Row, Col } from 'reactstrap';
 import { Sketch } from './Sketch';
-import GABuilder from "./ga/GABuilder"
+import {GABuilder} from "./ga/GABuilder"
 import React from 'react';
 
 class App extends React.Component {
