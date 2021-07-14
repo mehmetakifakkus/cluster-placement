@@ -1,7 +1,7 @@
 import paper from "paper";
 import {Point} from "../geometry/Point"
 
-const environment = new paper.Point(32, 30)
+const environment = new paper.Point(16, 15)
 
 function drawCoordinateSystem(width, height, step){
 
@@ -47,6 +47,55 @@ Array.prototype.clear = function() {
 
 Array.prototype.one = function(){
     return this[getRandomInt(0, this.length)];
+}
+
+Set.prototype.getOne = function () {
+
+    if (this.size == 0) return null;
+
+    let getEntriesArray = this.entries();
+    for (let i = 0; i < Math.random() * this.size - 1; i++)
+      getEntriesArray.next();
+    return getEntriesArray.next().value[0];
+  };
+
+export class PointSet{
+    
+    constructor(){
+        this.list = [];
+    }
+    
+    has(point){
+        for(let i=0; i < this.list.length; i++){
+            if(this.list[i].x == point.x && this.list[i].y == point.y)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    add(point){
+        // if(!this.has(point))
+            this.list.push(point)
+    }
+
+    delete(point){
+        for(let i=0; i < this.list.length; i++){
+            if(this.list[i].x == point.x && this.list[i].y == point.y)
+            {
+                this.list.splice(i, 1);
+            }
+        }
+    }
+
+    getOne() {
+        return this.list[Math.floor(Math.random() * this.list.length)];
+      }
+
+    toString() {
+        return this.list;
+      }
 }
 
 ///////////////////////////////////    Math    //////////////////////////////////////////
