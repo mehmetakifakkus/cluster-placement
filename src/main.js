@@ -5,8 +5,8 @@ import {File} from './File'
 import {Point} from './geometry/Point'
 import Chromosome from "./ga/Chromosome";
 
-var environment = new paper.Point(32, 30)
-var step = 20;
+var environment = new paper.Point(16, 15)
+var step = 40;
 
 let file_list = [ 
     new File('design1.ai', 1200, 1600), 
@@ -41,16 +41,15 @@ const initialize = function(file_text_list){
 
     Util.drawCoordinateSystem(environment.x, environment.y, step);
 
-    
-    let ga = new GABuilder(poolSize, File.getSizeList(file_list));
+    ga = new GABuilder(poolSize, File.getSizeList(file_list));
     
     // !TODO: sonrasinda paneller ile dosyalar var, once panelleri koy cluster icinde
     
     var t0 = performance.now();
-    ga = fileGA(clusters.arranged, 'root')
+    // ga = fileGA(clusters.arranged, 'root')
     console.log(ga)
 
-    for (let step = 0; step < 5; step++) {
+    for (let step = 0; step < 10; step++) {
         ga.evolve();
     }
 

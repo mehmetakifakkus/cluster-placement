@@ -21,13 +21,18 @@ export class GABuilder{
         this.length = item_list.length;
 
         let initialChromosome = new Chromosome(this.length); // initialize it
-        initialChromosome.initialize(item_list);
+        // initialChromosome.initialize2(item_list);
         // this.genePool.push(initialChromosome)
 
         // create the pool
         for(var i=0; i < this.poolSize; i++){
-            let newCh = initialChromosome.populate(4); // populate according to mutation type4
-            this.genePool.push(newCh);
+            // let newCh = initialChromosome.populate(4); // populate according to mutation type4
+
+            initialChromosome = new Chromosome(this.length); // initialize it
+            initialChromosome.initialize2(item_list);
+            this.genePool.push(initialChromosome);
+            // this.genePool.push(newCh);
+
         }
 
         this.sortByFitness();
@@ -61,20 +66,27 @@ export class GABuilder{
     }
 
     evolve(){
+
+        var t0 = performance.now();
+
         // 1. eliminate the second half
         let half = Math.floor(this.genePool.length/2); // half is floored if it is half of an odd number
         this.genePool.splice(half); // delete starting from half to the end
 
         // 2. populate the best one by performing mutation and place them in the second half
         let amount = half // length/2 changes acc. to being odd or even
-        let chr = this.genePool[0];
-
+        
         for(let i=0; i<amount; i++)
         {
-            if(Math.random() > 0.5)
-                this.genePool.push(chr.populate(5));
+            let chr = this.genePool[i%3];
+            let rand = Math.random();
+            if(rand > 0.75)
+                // this.genePool.push(chr.populate(7, Math.round(chr.length * Math.random())));
+                this.genePool.push(chr.populate(7, 7));
+            else if(rand > 0.5)
+                this.genePool.push(chr.populate(7, 5));
             else
-                this.genePool.push(chr.populate(6));
+                this.genePool.push(chr.populate(7, 3));
         }
 
         // 3. sort them again
@@ -83,16 +95,19 @@ export class GABuilder{
         // debug
         // console.log(this.genePool)
 
-        return this.genePool[0];
+        var t1 = performance.now()
+        console.log("evolution took " + (t1 - t0).toFixed(3) + " milliseconds.")
+
     }
 
-    mutate(type){
+    mutate(type, amount){
         let ch = this.genePool[this.selectionNo];
         var t0 = performance.now();
         
-        ch.mutate(type)
-        ch.redraw(true);
+        ch.mutate(type, amount)
         var t1 = performance.now()
+        
+        ch.redraw(true);
         
         console.log("mutation took " + (t1 - t0).toFixed(3) + " milliseconds.")
         console.log(this.selectionNo, 'th chromosome mutated')
