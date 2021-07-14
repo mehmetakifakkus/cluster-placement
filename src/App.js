@@ -4,6 +4,7 @@ import { Button, Container, Row, Col } from 'reactstrap';
 import { Sketch } from './Sketch';
 import {GABuilder} from "./ga/GABuilder"
 import React from 'react';
+import {initialize, getGA, getClusters, draw} from "./main";
 
 class App extends React.Component {
 
@@ -16,18 +17,20 @@ class App extends React.Component {
         
         var t0 = performance.now()
 
-        GABuilder.initializeGA(20, 10);
+        initialize();
+        let ga = getGA();
+        console.log(ga)
+        this.setState({selectedGA: ga, active_ch: 0});
         
-    
+
         var t1 = performance.now()
         console.log("initialization took " + (t1 - t0).toFixed(3) + " milliseconds.")
-        GABuilder.genePool[0].draw(true);
-        this.setState({ active_ch: 0}) 
+        ga.genePool[0].draw(true);
     }
 
     mutate(type){
-        GABuilder.mutate(type);
-        this.setState({ active_ch: GABuilder.selectionNo }) 
+        this.state.selectedGA.mutate(type);
+        this.setState({ active_ch: this.state.selectedGA.selectionNo }) 
     }
 
     render() {
@@ -56,17 +59,24 @@ class App extends React.Component {
                         <br/>
                         <br/>
                         <p>
-                           ..... <a href="#" className="alert-link" onClick={() => { this.mutate(5) }}>mutate5-clearHalved</a> ....
+                           ..... <a href="#" className="alert-link" onClick={() => { this.state.selectedGA.mutate(5); this.setState({ active_ch: this.state.selectedGA.selectionNo }); }}>mutate5-clearHalved</a> ....
                         </p>
                         <br/>
                         <br/>
                         <p>
-                            <a href="#" className="alert-link" onClick={() => { this.mutate(6) }}>the last 3</a> 
+                            <a href="#" className="alert-link" onClick={() => { this.state.selectedGA.mutate(7, 1); this.setState({ active_ch: this.state.selectedGA.selectionNo }); }}>the last 1</a> 
+                            <a href="#" className="alert-link" onClick={() => { this.state.selectedGA.mutate(7, 2); this.setState({ active_ch: this.state.selectedGA.selectionNo }); }}>, 2 </a> 
+                            <a href="#" className="alert-link" onClick={() => { this.state.selectedGA.mutate(7, 3); this.setState({ active_ch: this.state.selectedGA.selectionNo }); }}>, 3 </a> 
+                            <a href="#" className="alert-link" onClick={() => { this.state.selectedGA.mutate(7, 4); this.setState({ active_ch: this.state.selectedGA.selectionNo }); }}>, 4</a> 
+                            <a href="#" className="alert-link" onClick={() => { this.state.selectedGA.mutate(7, 5); this.setState({ active_ch: this.state.selectedGA.selectionNo });}}>, 5</a> 
+                            <a href="#" className="alert-link" onClick={() => { this.state.selectedGA.mutate(7, 6); this.setState({ active_ch: this.state.selectedGA.selectionNo });}}>, 6</a> 
+                            <a href="#" className="alert-link" onClick={() => { this.state.selectedGA.mutate(7, 7); this.setState({ active_ch: this.state.selectedGA.selectionNo });}}>, 7</a> 
+                            <a href="#" className="alert-link" onClick={() => { this.state.selectedGA.mutate(7, 8); this.setState({ active_ch: this.state.selectedGA.selectionNo });}}>, 8,  </a> 
                         </p>
 
                         <br/>
                         <p>
-                            <a href="#" className="alert-link" onClick={() => {GABuilder.evolve(); GABuilder.best().redraw(true)}}>evolve</a> 
+                            <a href="#" className="alert-link" onClick={() => {this.state.selectedGA.evolve(); this.state.selectedGA.best().redraw(true)}}>evolve</a> 
                         </p>
                         </Row>
                         
@@ -74,11 +84,11 @@ class App extends React.Component {
                         <hr/>
                         <Row style={{"margin":"-8px 0px -10px 5px"}}>
                             <div className="col-md-2">
-                                <button type="button" id="prev" className="btn btn-warning btn-sm" onClick={() => { GABuilder.prev(); this.setState({ active_ch: GABuilder.selectionNo }) }}>prev</button>
+                                <button type="button" id="prev" className="btn btn-warning btn-sm" onClick={() => { this.state.selectedGA.prev(); this.setState({ active_ch: this.state.selectedGA.selectionNo }) }}>prev</button>
                             </div>
                             <span id="info_chromosome">Chr. no: {this.state.active_ch}</span>
                             <div className="col-md-2">
-                                <button type="button" id="next" className="btn btn-warning btn-sm" onClick={() => { GABuilder.next(); this.setState({ active_ch: GABuilder.selectionNo }) }}>next</button>
+                                <button type="button" id="next" className="btn btn-warning btn-sm" onClick={() => { this.state.selectedGA.next(); this.setState({ active_ch: this.state.selectedGA.selectionNo }) }}>next</button>
                             </div>
                                 <br/>
                                 <br/>
@@ -93,8 +103,8 @@ class App extends React.Component {
 
                         <Row>
                             <div className="col-md-6">
-                                <b><u>General:</u></b><br/>
-                                <p id="info_fitness">Fitness value: { (GABuilder.genePool[this.state.active_ch])? GABuilder.genePool[this.state.active_ch].fitnessValue : ''}</p>
+                                <b><u>General:</u></b><br/>{console.log(this.state.active_ch)}
+                                <p id="info_fitness">Fitness value: { (this.state.selectedGA)? this.state.selectedGA.genePool[this.state.active_ch].fitnessValue : ''}</p>
                             </div>
                       
                         </Row>

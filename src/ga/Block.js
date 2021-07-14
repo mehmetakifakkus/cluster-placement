@@ -1,12 +1,13 @@
 
 import paper from "paper";
-import Util from "../Utils/Utilities";
+import Util, { PointSet } from "../Utils/Utilities";
 import {Point} from "../geometry/Point";
 import {Rectangle} from "../geometry/Rectangle";
 
-const step = 20;
-const environment = new Point(32, 30)
-const colors = ['red', 'green', 'blue', 'black', 'purple', 'brown', '#dddddd', '#444444', '#888888', '#bbbbbb', '#AB0902', '#104C90']
+
+const step = 40;
+const environment = new Point(16, 15)
+const colors = ['red', 'green', 'blue', 'black', 'purple', 'brown', '#dddddd', '#444444', '#888888', '#eebb44', '#AB0902', '#104C90']
 
 
 class Block extends Rectangle{
@@ -57,7 +58,8 @@ class Block extends Rectangle{
             var chromosome = this.parent.chromosome;
 
             for(var i=0; i<chromosome.length; i++){
-                if(chromosome[i] != this && chromosome[i].placed)
+                // if(chromosome[i] != this && chromosome[i].placed)
+                if(chromosome[i] != this)
                 if(chromosome[i].rectangle.intersects(this.rectangle))
                     return {result: true, item: chromosome[i]}
             }
@@ -72,11 +74,30 @@ class Block extends Rectangle{
             }
             
         }
+        else if(item instanceof Rectangle){
+            var chromosome = this.parent.chromosome;
+
+            for(var i=0; i < chromosome.length; i++){
+                if(chromosome[i].rectangle.intersects(item.rectangle))
+                    return {result: true, item: chromosome[i]}
+            }
+        }
         else if(item instanceof Block)
             if(item != this)
                 return {result: true, item: item}    
 
         return {result: false, item: item};
+    }
+
+    pointIntersects(point){
+        let chromosome = this.parent.chromosome;
+
+        for(let i=0; i < this.id; i++){
+            let rect = chromosome[i].rectangle;
+            if(rect.contains(new paper.Point(point.x, point.y)))
+                return {result: true, item: chromosome[i]}
+        }
+        return {result: false}
     }
 
     putInside(position){
@@ -112,13 +133,15 @@ class Block extends Rectangle{
 
         var oldPosition = new Point(this.point.x, this.point.y);
         
-        let revised = this.putInside(possiblePositions.one());
+        // let revised = this.putInside(possiblePositions.one());
+        let revised = possiblePositions.one();
         this.setPoint(revised);
         
         for(let i=0; i < 30  && this.intersects().result; i++)
         {
             // console.log(this.id + ', count:', i);
-            let revised = this.putInside(possiblePositions.one());
+            let revised = possiblePositions.one();
+            // let revised = this.putInside(possiblePositions.one());
             this.setPoint(revised); 
         } 
 
@@ -127,6 +150,51 @@ class Block extends Rectangle{
         
         this.placed = true;
     }
+
+    changePosAbit3(){
+        let ch = this.parent.chromosome;
+        let possiblePositions = new PointSet();
+        
+        let bbox = ch[0].rectangle;
+
+        for(let i=1; i < this.id; i++)
+            bbox = bbox.unite(ch[i].rectangle)
+
+        // create possible positions item can be located
+        for(let i=0; i < this.id; i++){ //! burada refactoring yapilabilir
+            if(ch[i].topRight.x < bbox.width){
+                // possiblePositions.add(JSON.stringify({x: ch[i].topRight.x, y:ch[i].topRight.y}))
+                // if(!this.pointIntersects(ch[i].topRight).result)
+                {
+                    possiblePositions.add(ch[i].topRight)
+                }
+                // else
+                {
+                    // console.log(ch[i], 'topRight intersects', this.pointIntersects(ch[i].topRight))
+                    
+                }
+            }
+            if(ch[i].bottomLeft.y < bbox.height){
+                // possiblePositions.add(JSON.stringify({x: ch[i].bottomLeft.x, y: ch[i].bottomLeft.y}))
+                // if(!this.pointIntersects(ch[i].bottomLeft).result)
+                    possiblePositions.add(ch[i].bottomLeft)
+                // else
+                    // console.log(ch[i], 'bottomLeft intersects', this.pointIntersects(ch[i].bottomLeft))
+
+            }
+            
+            possiblePositions.delete(ch[i]);
+
+        }
+        
+        let point = possiblePositions.getOne();
+        if(!point)  return;
+
+        let dd = this.intersects(new Rectangle(point, this.size));
+        if(!dd.result)
+            this.setPoint(point); 
+    }
+
 
 
     draw(beautify = false){
@@ -142,7 +210,7 @@ class Block extends Rectangle{
             textCenter.position = block.position;
             
             var textId = new paper.PointText({fontSize: '20px', fillColor: '#ffffff', content: this.id+ ''});  
-            textId.position = block.bounds.topLeft.add([14,18]);
+            textId.position = block.bounds.topLeft.add([10,14]);
 
             this.drawing = new paper.Group(block, textId, textCenter);
         }
