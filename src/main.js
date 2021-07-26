@@ -3,12 +3,13 @@ import Util from "./Utils/Utilities"
 import {GABuilder} from "./ga/GABuilder"
 import {File} from './File'
 import {Point} from './geometry/Point'
-import {StringCluster} from './Utils/StringCluster'
-import {FileCluster} from './Utils/FileCluster'
+import {Cluster, FileCluster} from './Utils/FileCluster'
+import { SimpleLayout } from "./Utils/SimpleLayout";
 import Chromosome from "./ga/Chromosome";
+import { Panel } from "./Panel";
 
 var environment = new paper.Point(32, 30)
-var step = 20;
+var step = 30;
 
 let file_list = [ 
     new File('design1.ai', 1200, 1600), 
@@ -43,45 +44,40 @@ const initialize = function(file_text_list){
 
     Util.drawCoordinateSystem(environment.x, environment.y, step);
 
-    
-    // let ga = new GABuilder(poolSize, file_list);
-    // var t1 = performance.now()
-    // console.log("initialization took " + (t1 - t0).toFixed(3) + " milliseconds.")
-    
-    // ga.best().move(new Point(5, 5));
-    
-    // ga.evolve();
-    // console.log(ga)
-    // ga.best().draw(true);
-    
-    // let clusters = new StringCluster(File.getNameList(file_list));
-    
-    clusters = new FileCluster(generateFileList(file_text_list));
+    clusters = new FileCluster(generateFilePanelList(file_text_list));
     console.log(clusters.arranged)
-    printMap(clusters.arranged)
+    console.log(clusters.listed)
+    // printMap(clusters.arranged)
     
     // !TODO: sonrasinda paneller ile dosyalar var, once panelleri koy cluster icinde
-    
+
     var t0 = performance.now();
-    ga = fileGA(clusters.arranged, 'root')
+    // ga = fileGA(clusters.arranged, 'root')
+    ga = fileGAList(clusters.listed);
     console.log(ga)
 
-    for (let step = 0; step < 5; step++) {
+    for (let step = 0; step < 100; step++) {
         ga.evolve();
     }
 
+    // console.log(extract(ga, new Point(0,0)));
     draw(ga, new Point(0,0));
+    console.log(ga)
 
     var t1 = performance.now()
     console.log("initialization took " + (t1 - t0).toFixed(3) + " milliseconds.")
 }
 
-// get file list from the textBox 
-// and create the File object
-function generateFileList(file_text_list){
+// get files from the textBox 
+// and create the File object list
+function generateFilePanelList(file_text_list){
     return file_text_list.map((it) => {
         let splitted = it.split(',');
-        if(splitted.length === 3)
+        if(splitted[0] == 'P')
+        {
+            return new Panel(splitted[1].trim(), 8, 4);
+        }
+        else if(splitted.length === 3)
             return new File(splitted[0], splitted[1], splitted[2]);
         else    
             return new File(splitted[0], 1, 1);
@@ -89,7 +85,81 @@ function generateFileList(file_text_list){
     })
 }
 
-function draw(ga, point =  new Point(0,0)){
+function extract(layout, point){
+    if(layout instanceof GABuilder)
+    {
+        return extractGA(layout, point);
+    }
+    else if(layout instanceof SimpleLayout)
+    {
+        return extractSimple(layout, point);
+    }
+}
+
+function extractSimple(sl, point = new Point(0, 0)){ // sl = simpleLayout
+    sl.move(point); // shift items
+    return sl.item_list;
+}
+
+function extractGA(ga, point =  new Point(0,0)){
+
+    const isChildFile = (item) => {
+        return item.chromosome[0].content instanceof File;
+    }
+    
+    let layout = ga.best();
+    // console.log(layout)
+    
+    if(layout instanceof Chromosome)
+    {
+        // console.log(layout, ga)
+        if(isChildFile(layout))
+        {
+            layout.move(point)
+            // layout.draw(true);
+        }
+    }
+
+    let list = []
+    layout.chromosome.forEach((it) => {
+        
+        it.point = it.point.add(point);
+
+        
+        if(it.content instanceof File)
+        {
+            // it.draw(true);            
+            list = list.concat(it.content);
+            // list.push(it.content);
+        }
+        else
+            list = list.concat(extract(it.content, it.point))
+            // list.push(extract(it.content, it.point))
+    })
+
+    return list;
+}
+
+
+function draw(layout, point){
+    if(layout instanceof GABuilder)
+    {
+        drawGA(layout, point);
+    }
+    else if(layout instanceof SimpleLayout)
+    {
+        drawSimple(layout, point);
+    }
+}
+
+function drawSimple(sl, point = new Point(0, 0)){ // sl = simpleLayout
+
+    sl.move(point); // shift items
+    sl.draw_items();
+
+}
+
+function drawGA(ga, point =  new Point(0,0)){
 
     const isChildFile = (item) => {
         return item.chromosome[0].content instanceof File;
@@ -108,46 +178,44 @@ function draw(ga, point =  new Point(0,0)){
         }
     }
 
-    layout.chromosome.forEach((it)=>{
+    layout.chromosome.forEach((it) => {
         
-        if(it.content instanceof GABuilder)
+        it.point = it.point.add(point);
+
+        draw(it.content, it.point)
+
+        if(it.content instanceof File || it.content instanceof Panel)
         {
-            // console.log(it.content, it.point)
-            draw(it.content, point.add(it.point))
+            it.draw(true);
         }
     })
 }
 
-function fileGA(map, title){
+// run genetic algorithm on clusters
+// give each cluster a title
+function fileGAList(cluster){
 
     let item_list = [];
-    for (let [key, value] of map) {
-        
-        if(value instanceof Map)
-        {
-            item_list.push(fileGA(value, key))
-            // console.log(key);
-        }
+
+    cluster.children.map(item => {
+        if(item instanceof Cluster)
+            item_list.push(fileGAList(item)) // add a cluster
         else
-        {
-            // burada biriktir ve harf sirasina koy, sonrasinda GA tarafina yolla
-            item_list.push(value);
-        }
-    }
-
-    // en basta harf sirasina koymak sorunu büyük oranda çözebilir
-    //items.sort( function(a, b){return a.localeCompare(b)});
-
-    if(item_list.length > 1)
-    {
-        let ga = new GABuilder(10, item_list);
-        ga.title = title;
-        return ga;
-    }
-    else 
-        return item_list[0];
+            item_list.push(item) // add a file
+    })
     
-
+    let layout = {};
+    if(SimpleLayout.isItIdentical(item_list))
+    {
+        layout = new SimpleLayout(item_list)
+        // console.log(item_list)
+    }
+    else
+        layout = new GABuilder(10, item_list);
+    
+    layout.title = cluster.name;
+    // console.log(item_list, ' ---> ', ga)
+    return layout;
 }
 
 function printMap(map){
@@ -174,13 +242,6 @@ function getGA(){
 }
 
 function getClusters(){
-    // return new Promise((resolve) => {
-    //     if(clusters)
-    //     {
-    //         resolve();
-    //         return clusters;
-    //     }
-    // })
     return clusters;
 }
 

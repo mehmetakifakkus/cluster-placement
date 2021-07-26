@@ -36,7 +36,7 @@ class Chromosome{
         this.chromosome.push(b);
         
         for(var i = 1; i < this.length; i++)
-            this.chromosome.push(new Block(this, item_list[i])); // itself given as parent of the block
+            this.chromosome.push(new Block(this, item_list[i], new Point(0,0))); // itself given as parent of the block
 
         this.calculateAreas();
         this.sortByArea();
