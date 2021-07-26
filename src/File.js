@@ -18,6 +18,10 @@ export class File{
         this.height = height;
     }
 
+    getSize(){
+        return this.simplified;
+    }
+
     simplifyDimensions(){
 
         const gcd = function(a, b) {
