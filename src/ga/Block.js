@@ -4,8 +4,9 @@ import Util from "../Utils/Utilities";
 import {Point} from "../geometry/Point";
 import {Rectangle} from "../geometry/Rectangle";
 import { File } from "../File";
+import { Panel } from "../Panel";
 
-const step = 20;
+const step = 30;
 const environment = new Point(32, 30)
 
 
@@ -19,9 +20,9 @@ class Block extends Rectangle{
         let point = point_ || (Util.getRandomPos());
 
         const getAppropriateSize = (item) =>{
-            if(item instanceof File)
-                return item.simplified;
-            else // GABuilder
+            // if(item instanceof File || item instanceof Panel)
+                // return item.getSize();
+            // else // GABuilder
                 return item.getSize();
         }
         let size = getAppropriateSize(item);  // || (Util.getRandomSize());
@@ -126,7 +127,7 @@ class Block extends Rectangle{
         let revised = this.putInside(possiblePositions.one());
         this.setPoint(revised);
         
-        for(let i=0; i < 30  && this.intersects().result; i++)
+        for(let i=0; i < 1000  && this.intersects().result; i++)
         {
             // console.log(this.id + ', count:', i);
             let revised = this.putInside(possiblePositions.one());
@@ -140,7 +141,7 @@ class Block extends Rectangle{
     }
 
 
-    draw(beautify = false, color){
+    draw(beautify = false, color = "#650023"){
 
         var block, textCenter, textId;
         if(beautify)
@@ -164,6 +165,11 @@ class Block extends Rectangle{
 
         this.drawing.onMouseDown = (event) => {
             console.log(this.id, this.placed)
+        }
+
+        this.drawing.onClick = (event) => {
+            console.log(this.id, this.content)
+            alert(this.id+' '+ JSON.stringify(this.content))
         }
 
         this.drawing.onDoubleClick = (event) => {
