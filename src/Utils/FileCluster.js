@@ -1,4 +1,12 @@
 import {File} from '../File'
+import { Panel } from '../Panel';
+
+export class Cluster{
+  constructor(name, children){
+    this.name = name;
+    this.children = children;
+  }
+}
 
 export class FileCluster {
     constructor(file_list) {
@@ -11,26 +19,46 @@ export class FileCluster {
         this.clustered = this.createSubMap(this.map);
 
         this.arranged = arrange(this.clustered);
+        console.log(this.arranged)
+        this.arranged = arrange2(this.arranged);
         this.assignFiles(this.arranged, '');
+        
+        this.listed = convertMapToList(this.arranged);
+        this.listed = generateRootClusters(this.listed)[0];
     }
   
     createSubMap(map) {
+
+      function isNumeric(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+      }
+
+      function getNumberSeries(str) {
+        let index = 0;
+        while (isNumeric(str[index++]));
+        return str.slice(0, index - 1);
+      }
+
       for (let [key, value] of map) {
         // console.log(key + " = " + value);
         let subMap = new Map();
   
         if (Array.isArray(value)) {
           value.forEach((name) => {
-            var firstChar = name[0];
-            var oldList = subMap.get(firstChar) || []; // split the string as the first character and the rest
-            var rest = name.substr(1);
-            //console.log(firstChar, rest);
+            var key = name[0];
+
+            if(isNumeric(key))
+              key = getNumberSeries(name);
+            
+            var oldList = subMap.get(key) || []; // split the string as the first character and the rest
+            var rest = name.substr(key.length);
+            //console.log(key, rest);
   
             if (rest !== undefined) {
               if (rest.length > 1) oldList.push(rest);
             }
   
-            subMap.set(firstChar, oldList);
+            subMap.set(key, oldList);
           });
         }
   
@@ -55,6 +83,7 @@ export class FileCluster {
       return map;
     }
 
+    // assign filename with the exact File Object
     assignFiles(map, prefix){
 
         for (let [key, value] of map) {
@@ -78,6 +107,7 @@ export class FileCluster {
             }
         }
     }
+
     }
 
   function getFirstValueofMap(map) {
@@ -110,6 +140,7 @@ export class FileCluster {
     return { value: value, key: key };
   }
   
+  // combine the keys if it has only one child
   function arrange(map) {
     let newMap = new Map(map);
   
@@ -124,10 +155,92 @@ export class FileCluster {
             getKeyValue(returned).value
           );
         } else newMap.set(key, returned);
+
       }
     }
   
     return newMap;
+  }
+
+  // do not cluster if the common part less than 3 characters
+  // works only for clusters under root level
+  function arrange2(map) {
+
+    let firstLevel = map.get("root");
+
+    for (let [key, value] of firstLevel) 
+    {
+      if(key.length < 3){
+        if(value instanceof Map)
+        {
+          for (let [key2, value2] of value){
+            firstLevel.set(
+              key + key2, value2
+            );
+          }
+        }
+        else if(value instanceof String || typeof value === 'string')
+        {
+          firstLevel.set(
+            key + value, ""
+            );
+        }    
+        
+        firstLevel.delete(key);
+      }
+    }
+
+    return map;
+  }
+
+
+
+  // convert map based clusters to list based one
+  function convertMapToList(map){
+    let list = [];
+
+    for (let [key, value] of map) {
+          
+      if(value instanceof Map)
+      {
+        list.push(new Cluster(key, convertMapToList(value)));
+      }
+      else
+      {
+        list.push(value)
+      }
+
+    };
+
+    return list;
+  }
+
+  function generateRootClusters(lst){
+    let pre = 0, next = 0, cluster_no =1;
+    let list_new = [];
+    let list = lst[0].children;
+
+    while(next < list.length){
+      while((list[next] instanceof Cluster || list[next] instanceof Panel) && next < list.length)
+      {
+        list_new.push(list[next]);
+        next++;
+        pre = next;
+      }
+
+      while(!(list[next] instanceof Cluster || list[next] instanceof Panel) && next < list.length)
+        next++;
+
+      if(next > pre)
+      {    
+        let temp = list.slice(pre, next);
+        list_new.push(new Cluster('cluster_' + cluster_no++, temp));
+      }
+    }
+
+    lst[0].children = list_new;
+    return lst;
+    // return new Cluster("root", list_new);
   }
 
 
