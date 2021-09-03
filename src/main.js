@@ -75,13 +75,12 @@ function generateFilePanelList(file_text_list){
         let splitted = it.split(',');
         if(splitted[0] == 'P')
         {
-            return new Panel(splitted[1].trim(), 4, 2);
+            return new Panel(splitted[1].trim(), 6, 3);
         }
         else if(splitted.length === 3)
             return new File(splitted[0], splitted[1], splitted[2]);
         else    
             return new File(splitted[0], 1, 1);
-            
     })
 }
 

@@ -63,29 +63,28 @@ class Block extends Rectangle{
     }
 
     intersects(item){
-        var result = false;
 
         if(typeof item == 'undefined'){
-            var chromosome = this.parent.chromosome;
+            let chromosome = this.parent.chromosome;
 
-            for(var i=0; i<chromosome.length; i++){
-                if(chromosome[i] != this && chromosome[i].placed)
+            for(let i=0; i<chromosome.length; i++){
+                if(chromosome[i] !== this && chromosome[i].placed)
                 if(chromosome[i].rectangle.intersects(this.rectangle))
                     return {result: true, item: chromosome[i]}
             }
         }
         else if(Array.isArray(item)){    // item represents all blocks (chromosome), this represents one specific block (gene)qh
-            var chromosome = item;
+            let chromosome = item;
 
-            for(var i=0; i<chromosome.length; i++){
-                if(chromosome[i] != this)
+            for(let i=0; i<chromosome.length; i++){
+                if(chromosome[i] !== this)
                 if (chromosome[i].rectangle.intersects(this.rectangle))
                     return {result: true, item: chromosome[i]}
             }
             
         }
         else if(item instanceof Block)
-            if(item != this)
+            if(item !== this)
                 return {result: true, item: item}    
 
         return {result: false, item: item};
