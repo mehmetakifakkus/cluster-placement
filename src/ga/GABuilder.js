@@ -1,4 +1,5 @@
 import { Point } from "../geometry/Point";
+import settings from "../Utils/Settings";
 import Chromosome from "./Chromosome"
 
 export class GABuilder{
@@ -11,17 +12,18 @@ export class GABuilder{
         this.selectionNo = 0;
         this.genePool = [];
         this.poolSize = poolSize;
-        this.initializeGA(item_list);
+        this.item_list = item_list;
+        this.initializeGA();
     }
 
-    initializeGA(item_list){
+    initializeGA(){
 
         this.selectionNo = 0;
         this.genePool = [];
-        this.length = item_list.length;
+        this.length = this.item_list.length;
 
         let initialChromosome = new Chromosome(this.length); // initialize it
-        // initialChromosome.initialize2(item_list);
+        // initialChromosome.initialize2(this.item_list);
         // this.genePool.push(initialChromosome)
 
         // create the pool
@@ -29,7 +31,7 @@ export class GABuilder{
             // let newCh = initialChromosome.populate(4); // populate according to mutation type4
 
             initialChromosome = new Chromosome(this.length); // initialize it
-            initialChromosome.initialize2(item_list);
+            initialChromosome.initialize2(this.item_list);
             this.genePool.push(initialChromosome);
             // this.genePool.push(newCh);
 
@@ -66,8 +68,7 @@ export class GABuilder{
     }
 
     evolve(){
-
-        var t0 = performance.now();
+        // var t0 = performance.now();
 
         // 1. eliminate the second half
         let half = Math.floor(this.genePool.length/2); // half is floored if it is half of an odd number
@@ -76,17 +77,37 @@ export class GABuilder{
         // 2. populate the best one by performing mutation and place them in the second half
         let amount = half // length/2 changes acc. to being odd or even
         
-        for(let i=0; i<amount; i++)
+        for(let i=0; i < amount-2; i++)
         {
             let chr = this.genePool[i%3];
             let rand = Math.random();
-            if(rand > 0.75)
+            if(rand > 0.3)
                 // this.genePool.push(chr.populate(7, Math.round(chr.length * Math.random())));
                 this.genePool.push(chr.populate(7, 7));
             else if(rand > 0.5)
                 this.genePool.push(chr.populate(7, 5));
+            
             else
-                this.genePool.push(chr.populate(7, 3));
+                // this.genePool.push(chr.populate(7, 3));
+            {
+                let initialChromosome = new Chromosome(this.length); // initialize it
+                initialChromosome.initialize2(this.item_list);
+                initialChromosome.localSearch();
+                this.genePool.push(initialChromosome);
+            }
+
+        }
+        
+        for(let i=0; i < 2; i++)
+        {
+            let initialChromosome = new Chromosome(this.length); // initialize it
+            initialChromosome.initialize2(this.item_list);
+            initialChromosome.localSearch();
+            this.genePool.push(initialChromosome);
+        }
+
+        for(let i=0; i<this.genePool.length; i++){
+            this.genePool[i].localSearch();
         }
 
         // 3. sort them again
@@ -95,8 +116,8 @@ export class GABuilder{
         // debug
         // console.log(this.genePool)
 
-        var t1 = performance.now()
-        console.log("evolution took " + (t1 - t0).toFixed(3) + " milliseconds.")
+        // var t1 = performance.now()
+        // console.log("evolution took " + (t1 - t0).toFixed(3) + " milliseconds.")
 
     }
 
@@ -111,6 +132,17 @@ export class GABuilder{
         
         console.log("mutation took " + (t1 - t0).toFixed(3) + " milliseconds.")
         console.log(this.selectionNo, 'th chromosome mutated')
+    }
+
+    localSearch(){
+        let ch = this.genePool[this.selectionNo];
+        let id = settings.selectedBlock;
+
+        for(id = ch.length/10; id < ch.length; id++) // except the first one
+        {
+            ch.chromosome[id].localSearch();
+        }
+        ch.redraw(true);
     }
 
     getSize(){

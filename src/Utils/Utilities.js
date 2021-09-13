@@ -76,7 +76,7 @@ export class PointSet{
     }
 
     add(point){
-        // if(!this.has(point))
+        if(!this.has(point))
             this.list.push(point)
     }
 
@@ -92,6 +92,21 @@ export class PointSet{
     getOne() {
         return this.list[Math.floor(Math.random() * this.list.length)];
       }
+
+    getSmallest(){
+        this.list.sort((a,b)=> {return a.x + a.y - (b.x + b.y)});
+        return this.list[0];
+    }
+
+    getSmallestX(){
+        this.list.sort((a,b)=> {return a.x - b.x});
+        return this.list[0];
+    }
+    
+    getSmallestY(){
+        this.list.sort((a,b)=> {return a.y - b.y});
+        return this.list[0];
+    }
 
     toString() {
         return this.list;

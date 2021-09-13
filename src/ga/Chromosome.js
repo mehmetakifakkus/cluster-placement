@@ -2,6 +2,7 @@ import paper from "paper";
 import Block from "./Block"
 import Util, { PointSet } from "../Utils/Utilities"
 import {Point} from "../geometry/Point"
+import { Rectangle } from "paper/dist/paper-core";
 
 
 class Chromosome{
@@ -46,6 +47,7 @@ class Chromosome{
 
     initialize2(size_list){
         Block.counter = 0;
+        this.possiblePositions = new PointSet();
 
         // Create blocks
         // first place the first one to 0,0 location
@@ -57,7 +59,9 @@ class Chromosome{
         for(var i = 1; i < this.length; i++)
         {
             let b = new Block(this, size_list[i]);
+            // let point = this.possiblePositions.getOne();
             let point = this.possiblePositions.getOne();
+            // let point = Math.random() > 0.5? this.possiblePositions.getSmallestX(): this.possiblePositions.getSmallestY();
             
             b.setPoint(point);
             this.possiblePositions.add(b.topRight)
@@ -65,6 +69,7 @@ class Chromosome{
             
             this.possiblePositions.delete(point);
 
+            // console.log(i, this.possiblePositions)
             this.chromosome.push(b); // itself given as parent of the block
         }
 
@@ -213,6 +218,16 @@ class Chromosome{
     mutation(){
         for(var i=0; i < this.length; i++)
             this.chromosome[i].changePosAbit();
+    }
+
+    localSearch(){
+        let ch = this.chromosome;
+        
+        for(let id = ch.length/10; id < ch.length; id++) // except the first one
+        {
+            ch[id].localSearch();
+        }
+
     }
 
     fitnessFunction(){

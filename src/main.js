@@ -35,10 +35,9 @@ let clusters = null;
 
 const initialize = function(file_text_list){
 
-    var poolSize = 10;
+    var poolSize = 16;
     
     paper.project.activeLayer.removeChildren();
-
     Util.drawCoordinateSystem(environment.x, environment.y, step);
 
     ga = new GABuilder(poolSize, File.getSizeList(file_list));
@@ -49,7 +48,7 @@ const initialize = function(file_text_list){
     // ga = fileGA(clusters.arranged, 'root')
     console.log(ga)
 
-    for (let step = 0; step < 10; step++) {
+    for (let step = 0; step < 5; step++) {
         ga.evolve();
     }
 

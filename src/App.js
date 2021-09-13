@@ -33,6 +33,11 @@ class App extends React.Component {
         this.setState({ active_ch: this.state.selectedGA.selectionNo }) 
     }
 
+    refreshFitnessValue(){
+        this.setState({ active_ch: this.state.selectedGA.selectionNo }) 
+    }
+
+
     render() {
         return (
             <Container style={{ padding: '1rem' }}>
@@ -76,7 +81,13 @@ class App extends React.Component {
 
                         <br/>
                         <p>
-                            <a href="#" className="alert-link" onClick={() => {this.state.selectedGA.evolve(); this.state.selectedGA.best().redraw(true)}}>evolve</a> 
+                            <a href="#" className="alert-link" onClick={() => {this.state.selectedGA.evolve(); this.refreshFitnessValue(); this.state.selectedGA.best().redraw(true)}}>evolve</a> 
+                        </p>
+
+                        <br/>
+                        <hr/>
+                        <p>
+                            <a href="#" className="alert-link" onClick={() => {this.state.selectedGA.localSearch(); this.refreshFitnessValue();}}>localSearch</a> 
                         </p>
                         </Row>
                         
@@ -92,7 +103,7 @@ class App extends React.Component {
                             </div>
                                 <br/>
                                 <br/>
-                              <p>We can have info of <a href="#" onClick={()=>{console.log(GABuilder.genePool[GABuilder.selectionNo]);}} className="alert-link"> active </a> chromosome.
+                              <p>We can have info of <a href="#" onClick={()=>{console.log(this.state.selectedGA.genePool[this.state.selectedGA.selectionNo]);}} className="alert-link"> active </a> chromosome.
                                 </p>          
                         </Row>
 

@@ -3,6 +3,7 @@ import paper from "paper";
 import Util, { PointSet } from "../Utils/Utilities";
 import {Point} from "../geometry/Point";
 import {Rectangle} from "../geometry/Rectangle";
+import settings from "../Utils/Settings";
 
 
 const step = 40;
@@ -78,6 +79,7 @@ class Block extends Rectangle{
             var chromosome = this.parent.chromosome;
 
             for(var i=0; i < chromosome.length; i++){
+                if(chromosome[i] != this)
                 if(chromosome[i].rectangle.intersects(item.rectangle))
                     return {result: true, item: chromosome[i]}
             }
@@ -92,7 +94,7 @@ class Block extends Rectangle{
     pointIntersects(point){
         let chromosome = this.parent.chromosome;
 
-        for(let i=0; i < this.id; i++){
+        for(let i=0; i < chromosome.length; i++){
             let rect = chromosome[i].rectangle;
             if(rect.contains(new paper.Point(point.x, point.y)))
                 return {result: true, item: chromosome[i]}
@@ -195,6 +197,39 @@ class Block extends Rectangle{
             this.setPoint(point); 
     }
 
+    localSearch(){
+        let ch = this.parent.chromosome;
+        let possiblePositions = new PointSet();
+        
+        let bbox = ch[0].rectangle;
+
+        for(let i=1; i < this.id; i++)
+            bbox = bbox.unite(ch[i].rectangle)
+
+        // create possible positions item can be located
+        for(let i=0; i < ch.length; i++){ //! burada refactoring yapilabilir
+            if(ch[i].topRight.x < bbox.width){
+                let modf = ch[i].topRight.add([0.5, 0.5]);
+                if(!this.pointIntersects(modf).result)
+                    possiblePositions.add(ch[i].topRight)
+            }
+            if(ch[i].bottomLeft.y < bbox.height){
+                let modf = ch[i].bottomLeft.add([0.5, 0.5]);
+                if(!this.pointIntersects(modf).result)
+                    possiblePositions.add(ch[i].bottomLeft)
+            }
+            
+            possiblePositions.delete(ch[i]);
+        }
+        
+        let point = possiblePositions.getSmallest();
+        // console.log(possiblePositions, point)
+        if(!point)  return;
+
+        let dd = this.intersects(new Rectangle(point, this.size));
+        if(!dd.result && point.manhattan() <= this.point.manhattan())
+            this.setPoint(point);
+    }
 
 
     draw(beautify = false){
@@ -221,6 +256,7 @@ class Block extends Rectangle{
 
         this.drawing.onMouseDown = (event) => {
             console.log(this.id, this.placed)
+            settings.selectedBlock = this.id;
         }
 
         this.drawing.onDoubleClick = (event) => {
