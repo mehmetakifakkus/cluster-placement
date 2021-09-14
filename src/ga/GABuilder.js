@@ -13,23 +13,27 @@ export class GABuilder{
         this.poolSize = poolSize;
         this.genePool = [];
         this.item_list = item_list;
-        this.initializeGA(item_list);
+        this.initializeGA();
     }
 
-    initializeGA(item_list){
+    initializeGA(){
 
         this.selectionNo = 0;
         this.genePool = [];
-        this.length = item_list.length;
+        this.length = this.item_list.length;
 
-        let initialChromosome = new Chromosome(this.length); // initialize it
-        initialChromosome.initialize(item_list);
+        let initialChromosome; // = new Chromosome(this.length); // initialize it
+        // initialChromosome.initialize(item_list);
         // this.genePool.push(initialChromosome)
 
         // create the pool
         for(var i=0; i < this.poolSize; i++){
-            let newCh = initialChromosome.populate(4); // populate according to mutation type4
-            this.genePool.push(newCh);
+            // let newCh = initialChromosome.populate(4); // populate according to mutation type4
+            // this.genePool.push(newCh);
+
+            initialChromosome = new Chromosome(this.length); // initialize it
+            initialChromosome.initialize2(this.item_list);
+            this.genePool.push(initialChromosome);
         }
 
         this.sortByFitness();
@@ -116,13 +120,14 @@ export class GABuilder{
 
     }
 
-    mutate(type){
+    mutate(type, amount){
         let ch = this.genePool[this.selectionNo];
         var t0 = performance.now();
         
-        ch.mutate(type)
-        ch.redraw(true);
+        ch.mutate(type, amount)
         var t1 = performance.now()
+        
+        ch.redraw(true);
         
         console.log("mutation took " + (t1 - t0).toFixed(3) + " milliseconds.")
         console.log(this.selectionNo, 'th chromosome mutated')
