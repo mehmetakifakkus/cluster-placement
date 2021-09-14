@@ -23,16 +23,16 @@ export class Rectangle{
         this.height = this.size.y;
         this.width = this.size.x;
 
-        this.left = this.x;
-        this.right = this.x + this.width;
-        this.top = this.y;
-        this.bottom = this.y + this.height;
+        // this.left = this.x;
+        // this.right = this.x + this.width;
+        // this.top = this.y;
+        // this.bottom = this.y + this.height;
 
-        this.center = this.point.add(this.size.divide(2));
-        this.topLeft = this.point;
+        // this.center = this.point.add(this.size.divide(2));
+        // this.topLeft = this.point;
         this.topRight = this.point.add([this.width, 0]);
         this.bottomLeft = this.point.add([0, this.height]);
-        this.bottomRight = this.point.add(this.size);
+        // this.bottomRight = this.point.add(this.size);
         
         // this.leftCenter = this.point.add([0, this.height / 2]);
         // this.topCenter = this.point.add([this.width / 2, 0]);

@@ -49,6 +49,70 @@ Array.prototype.one = function(){
     return this[getRandomInt(0, this.length)];
 }
 
+Set.prototype.getOne = function () {
+
+    if (this.size == 0) return null;
+
+    let getEntriesArray = this.entries();
+    for (let i = 0; i < Math.random() * this.size - 1; i++)
+      getEntriesArray.next();
+    return getEntriesArray.next().value[0];
+  };
+
+export class PointSet{
+    
+    constructor(){
+        this.list = [];
+    }
+    
+    has(point){
+        for(let i=0; i < this.list.length; i++){
+            if(this.list[i].x == point.x && this.list[i].y == point.y)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    add(point){
+        if(!this.has(point))
+            this.list.push(point)
+    }
+
+    delete(point){
+        for(let i=0; i < this.list.length; i++){
+            if(this.list[i].x == point.x && this.list[i].y == point.y)
+            {
+                this.list.splice(i, 1);
+            }
+        }
+    }
+
+    getOne() {
+        return this.list[Math.floor(Math.random() * this.list.length)];
+      }
+
+    getSmallest(){
+        this.list.sort((a,b)=> {return a.x + a.y - (b.x + b.y)});
+        return this.list[0];
+    }
+
+    getSmallestX(){
+        this.list.sort((a,b)=> {return a.x - b.x});
+        return this.list[0];
+    }
+    
+    getSmallestY(){
+        this.list.sort((a,b)=> {return a.y - b.y});
+        return this.list[0];
+    }
+
+    toString() {
+        return this.list;
+      }
+}
+
 ///////////////////////////////////    Math    //////////////////////////////////////////
 
 function getRandomInt(min, max) {

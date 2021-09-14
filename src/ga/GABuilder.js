@@ -12,6 +12,7 @@ export class GABuilder{
         this.selectionNo = 0;
         this.poolSize = poolSize;
         this.genePool = [];
+        this.item_list = item_list;
         this.initializeGA(item_list);
     }
 
@@ -62,20 +63,46 @@ export class GABuilder{
     }
 
     evolve(){
+        // var t0 = performance.now();
+
         // 1. eliminate the second half
         let half = Math.floor(this.genePool.length/2); // half is floored if it is half of an odd number
         this.genePool.splice(half); // delete starting from half to the end
 
         // 2. populate the best one by performing mutation and place them in the second half
         let amount = half // length/2 changes acc. to being odd or even
-        let chr = this.genePool[0];
-
-        for(let i=0; i<amount; i++)
+        
+        for(let i=0; i < amount-2; i++)
         {
-            if(Math.random() > 0.5)
-                this.genePool.push(chr.populate(5));
+            let chr = this.genePool[i%3];
+            let rand = Math.random();
+            if(rand > 0.3)
+                // this.genePool.push(chr.populate(7, Math.round(chr.length * Math.random())));
+                this.genePool.push(chr.populate(7, 7));
+            else if(rand > 0.5)
+                this.genePool.push(chr.populate(7, 5));
+            
             else
-                this.genePool.push(chr.populate(6));
+                // this.genePool.push(chr.populate(7, 3));
+            {
+                let initialChromosome = new Chromosome(this.length); // initialize it
+                initialChromosome.initialize2(this.item_list);
+                initialChromosome.localSearch();
+                this.genePool.push(initialChromosome);
+            }
+
+        }
+        
+        for(let i=0; i < 2; i++)
+        {
+            let initialChromosome = new Chromosome(this.length); // initialize it
+            initialChromosome.initialize2(this.item_list);
+            initialChromosome.localSearch();
+            this.genePool.push(initialChromosome);
+        }
+
+        for(let i=0; i<this.genePool.length; i++){
+            this.genePool[i].localSearch();
         }
 
         // 3. sort them again
@@ -84,7 +111,9 @@ export class GABuilder{
         // debug
         // console.log(this.genePool)
 
-        return this.genePool[0];
+        // var t1 = performance.now()
+        // console.log("evolution took " + (t1 - t0).toFixed(3) + " milliseconds.")
+
     }
 
     mutate(type){

@@ -1,6 +1,6 @@
 import paper from "paper";
 import Block from "./Block"
-import Util from "../Utils/Utilities"
+import Util, {PointSet} from "../Utils/Utilities"
 import {Point} from "../geometry/Point"
 import settings from '../Utils/Settings'
 
@@ -15,6 +15,7 @@ class Chromosome{
         this.length = length;
         this.totalArea = 0;
         this.fitnessValue = 0;
+        this.possiblePositions = new PointSet();
         
         if(flag)
             this.initialize();
@@ -40,6 +41,39 @@ class Chromosome{
 
         this.calculateAreas();
         this.sortByArea();
+    }
+
+    initialize2(size_list){
+        Block.counter = 0;
+        this.possiblePositions = new PointSet();
+
+        // Create blocks
+        // first place the first one to 0,0 location
+        var b = new Block(this, size_list[0], new Point(0,0));
+        this.chromosome.push(b);
+        this.possiblePositions.add(b.topRight)
+        this.possiblePositions.add(b.bottomLeft)
+        
+        for(var i = 1; i < this.length; i++)
+        {
+            let b = new Block(this, size_list[i]);
+            // let point = this.possiblePositions.getOne();
+            let point = this.possiblePositions.getOne();
+            // let point = Math.random() > 0.5? this.possiblePositions.getSmallestX(): this.possiblePositions.getSmallestY();
+            
+            b.setPoint(point);
+            this.possiblePositions.add(b.topRight)
+            this.possiblePositions.add(b.bottomLeft)
+            
+            this.possiblePositions.delete(point);
+
+            // console.log(i, this.possiblePositions)
+            this.chromosome.push(b); // itself given as parent of the block
+        }
+
+        this.calculateAreas();
+        this.sortByArea();
+        this.fitnessFunction();
     }
         
     getArea(){
@@ -97,7 +131,7 @@ class Chromosome{
     }
 
     // this.populate = populate1;
-    populate(type_){
+    populate(type_, amount){
     
         Block.counter = 0;
         var type = type_ || 1;
@@ -105,14 +139,14 @@ class Chromosome{
         // clone the chromosome
         var copied = this.clone();
 
-        copied.mutate(type);
+        copied.mutate(type, amount);
         copied.fitnessValue = copied.fitnessFunction();
 
         // return newly mutated gene
         return copied;
     }
     
-    mutate(type_){
+    mutate(type_, amount){
         var type = type_ || 1;
         
         if(type == 4)
@@ -121,6 +155,9 @@ class Chromosome{
             this.mutate5(); // move half of the block
         else if(type == 6)
             this.mutate6(); // move the smallest 3
+        else if(type == 7)
+            this.mutate7(amount); // move the smallest 5
+
     }
 
     // change positions a bit according to topRight or bottomLeft
@@ -151,8 +188,18 @@ class Chromosome{
 
         for(var i = amount; i < this.chromosome.length; i++) // except the first one
         {
-            this.chromosome[i].changePosAbit2();
+            // this.chromosome[i].changePosAbit2();
+            this.chromosome[i].changePosAbit3();
         }
+    }
+
+    mutate7(amount){
+        for(var i = this.chromosome.length - amount; i < this.chromosome.length; i++) // except the first one
+        {
+            // this.chromosome[i].changePosAbit2();
+            this.chromosome[i].changePosAbit3();
+        }
+        this.fitnessFunction();
     }
 
 
@@ -183,6 +230,15 @@ class Chromosome{
             this.chromosome[i].changePosAbit();
     }
 
+    localSearch(){
+        let ch = this.chromosome;
+        
+        for(let id = Math.floor(ch.length/10); id < ch.length; id++) // except the first one
+        {
+            ch[id].localSearch();
+        }
+    }
+
     fitnessFunction(){
         let totalIndividialAreas = 0;
 
@@ -198,6 +254,21 @@ class Chromosome{
             // aa = aa.unite(it.drawing)
         });
 
+        // let contour = new paper.Path.Rectangle({
+        //     point: this.chromosome[0].rectangle.point,
+        //     size: this.chromosome[0].rectangle.size,
+        //     visible: false
+        // });
+
+        // this.chromosome.forEach(it => {
+        //     let path = new paper.Path.Rectangle({
+        //         point: it.rectangle.point,
+        //         size: it.rectangle.size,
+        //         visible: false
+        //     });
+        //     contour = contour.unite(path)
+        // });
+
         this.bbox = bbox;
         // let ratio = totalIndividialAreas / gr.bounds.area;
         let f1 = 100 * this.getArea() / bbox.area;
@@ -212,7 +283,14 @@ class Chromosome{
 
         // return f1;
         // console.log(settings.sliderValue)
-        return (((100 - settings.sliderValue) / 100) * f1 +  (settings.sliderValue / 100) * f2).toFixed(4);
+        // return (((100 - settings.sliderValue) / 100) * f1 +  (settings.sliderValue / 100) * f2).toFixed(4);
+        this.fitnessValue = (0.6 * f1 +  0.4 * f2).toFixed(4);
+        // this.fitnessValue = (0.6 * f1 +  0.4 * f2).toFixed(4) - contour.segments?.length * 3;
+
+        // if(isNaN(this.fitnessValue))
+        //     this.fitnessValue = 10;
+
+        return this.fitnessValue;
     }
 
     clearPositions(){

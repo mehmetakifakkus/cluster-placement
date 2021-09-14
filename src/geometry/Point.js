@@ -48,6 +48,10 @@ export class Point{
     }
 
 ////////////  Properties  ////////////////////
+    manhattan(){
+        return this.x + this.y;
+    }
+    
     length(){
         return Math.sqrt(this.x * this.x + this.y * this.y)
     }
