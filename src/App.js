@@ -10,6 +10,7 @@ import 'antd/dist/antd.css';
 import { Tree, Slider, Input} from 'antd';
 
 import settings from './Utils/Settings'
+import { Point } from "./geometry/Point";
 var path = require('path')
 
 settings.sliderValue = 40;
@@ -150,6 +151,20 @@ class App extends React.Component {
         this.getTreeData();
     }
 
+    evolve = () =>{
+        this.state.selectedGA.evolve();
+        
+        paper.project.activeLayer.removeChildren();
+        draw();
+    }
+
+    localSearch = ()=>{
+        this.state.selectedGA.localSearch();
+        
+        paper.project.activeLayer.removeChildren();
+        draw(this.state.selectedGA, new Point(0,0));
+    }
+
     mutate(type){
         getGA().mutate(type);
         this.setState({ active_ch: getGA().selectionNo }) 
@@ -206,6 +221,10 @@ class App extends React.Component {
                             
                             <button type="button" id="run" className="btn btn-warning btn-sm" 
                                 onClick={() => {this.run()}}>RUN</button>
+                            <button type="button" id="run" className="btn btn-warning btn-sm" 
+                                onClick={() => {this.evolve()}}>evolve</button>
+                            <button type="button" id="run" className="btn btn-warning btn-sm" 
+                                onClick={() => {this.localSearch()}}>local</button>
                                 
                                 {/* <br/>
                               <p>We can have info of <a href="#" onClick={()=>{console.log(getGA()?.genePool[GABuilder.selectionNo]);  this.getTreeData();}} className="alert-link"> active </a> chromosome.</p>           */}

@@ -141,6 +141,7 @@ function extractGA(ga, point =  new Point(0,0)){
 
 
 function draw(layout, point){
+    
     if(layout instanceof GABuilder)
     {
         drawGA(layout, point);
@@ -152,41 +153,17 @@ function draw(layout, point){
 }
 
 function drawSimple(sl, point = new Point(0, 0)){ // sl = simpleLayout
-
-    sl.move(point); // shift items
-    sl.draw_items();
-
+    sl.draw_items(point); // draw items by shifting
 }
 
 function drawGA(ga, point =  new Point(0,0)){
-
-    const isChildFile = (item) => {
-        return item.chromosome[0].content instanceof File;
-    }
-    
     let layout = ga.best();
-    // console.log(layout)
     
-    if(layout instanceof Chromosome)
-    {
-        // console.log(layout, ga)
-        if(isChildFile(layout))
-        {
-            layout.move(point)
-            layout.draw(true);
-        }
-    }
-
     layout.chromosome.forEach((it) => {
-        
-        it.point = it.point.add(point);
-
-        draw(it.content, it.point)
-
         if(it.content instanceof File || it.content instanceof Panel)
-        {
-            it.draw(true);
-        }
+            it.draw(point, true);
+        else
+            draw(it.content, it.point.add(point))
     })
 }
 

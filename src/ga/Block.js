@@ -240,12 +240,13 @@ class Block extends Rectangle{
     }
 
 
-    draw(beautify = false, color = "#650023"){
+    draw(shift, beautify = false, color = "#650023"){
 
+        let shiftedPoint = shift.add(this.point);
         var block, textCenter, textId;
         if(beautify)
         {
-            block = new paper.Path.Rectangle({point: this.point.multiply(step), size: this.size.multiply(step), strokeWidth: 2, strokeColor: 'black', fillColor: color})
+            block = new paper.Path.Rectangle({point: shiftedPoint.multiply(step), size: this.size.multiply(step), strokeWidth: 2, strokeColor: 'black', fillColor: color})
     
             var fontSize = Math.min(this.size.x, this.size.y) * step * 0.75;
             var textCenter = new paper.PointText({fontSize: fontSize/2 + 'px', fillColor: '#dddddd', content: this.size.x + 'x' + this.size.y, opacity: 1});  

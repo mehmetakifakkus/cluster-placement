@@ -133,6 +133,16 @@ export class GABuilder{
         console.log(this.selectionNo, 'th chromosome mutated')
     }
 
+    localSearch(){
+        let ch = this.genePool[this.selectionNo];
+        // let id = settings.selectedBlock;
+
+        for(let id = Math.floor(ch.length/10); id < ch.length; id++) // except the first one
+        {
+            ch.chromosome[id].localSearch();
+        }
+    }
+
     getSize(){
         let temp = this.genePool[0].bbox;
         return new Point(temp.width, temp.height);

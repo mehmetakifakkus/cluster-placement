@@ -53,14 +53,16 @@ export class SimpleLayout{
         //     console.log("resulting ratio", (heu * width) / (height * complete));
     }
 
-    draw_items(){
+    draw_items(shift){
 
         const drawBlock = (item, beautify = false, color) => {
+
+            let shiftedPoint = shift.add(item.point);
 
             var block, textCenter, textId;
             if(beautify)
             {
-                block = new paper.Path.Rectangle({point: item.point.multiply(step), size: new Point(this.unitSize.width, this.unitSize.height).multiply(step), strokeWidth: 2, strokeColor: 'black', fillColor: color})
+                block = new paper.Path.Rectangle({point: shiftedPoint.multiply(step), size: new Point(this.unitSize.width, this.unitSize.height).multiply(step), strokeWidth: 2, strokeColor: 'black', fillColor: color})
         
                 var fontSize = Math.min(this.unitSize.x, this.unitSize.y) * step * 0.75;
                 var textCenter = new paper.PointText({fontSize: fontSize/2 + 'px', fillColor: '#dddddd', content: item.name, opacity: 1});  
@@ -98,12 +100,6 @@ export class SimpleLayout{
             drawBlock(it, true, colors[rand % colors.length])
         })
         
-    }
-
-    move(shift){
-        this.item_list.forEach(it => {
-            it.point = shift.add(it.point);
-        })
     }
 
     findHeuristic(width, height, amount, ratio) {
