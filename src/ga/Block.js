@@ -208,29 +208,31 @@ class Block extends Rectangle{
 
         // create possible positions item can be located
         for(let i=0; i < ch.length; i++){ //! burada refactoring yapilabilir
-            if(ch[i].topRight.x < bbox.width){
-                let modf = ch[i].topRight.add([0.5, 0.5]);
-                if(!this.pointIntersects(modf).result)
-                    possiblePositions.add(ch[i].topRight)
+            if(ch[i] != this)
+            {
+                if(ch[i].topRight.x < bbox.width){
+                    let modf = ch[i].topRight.add([0.5, 0.5]);
+                    if(!this.pointIntersects(modf).result)
+                        possiblePositions.add(ch[i].topRight)
+                }
+                if(ch[i].bottomLeft.y < bbox.height){
+                    let modf = ch[i].bottomLeft.add([0.5, 0.5]);
+                    if(!this.pointIntersects(modf).result)
+                        possiblePositions.add(ch[i].bottomLeft)
+                }
             }
-            if(ch[i].bottomLeft.y < bbox.height){
-                let modf = ch[i].bottomLeft.add([0.5, 0.5]);
-                if(!this.pointIntersects(modf).result)
-                    possiblePositions.add(ch[i].bottomLeft)
-            }
-            
-            possiblePositions.delete(ch[i]);
+            // possiblePositions.delete(ch[i]);
         }
         
         let point = possiblePositions.getSmallest();
-        // console.log(possiblePositions, point)
+        console.log(this.id, possiblePositions, point)
         if(!point)  return;
 
         let dd = this.intersects(new Rectangle(point, this.size));
         if(!dd.result && point.manhattan() <= this.point.manhattan())
             this.setPoint(point);
+        console.error('');
     }
-
 
     draw(beautify = false){
 
