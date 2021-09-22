@@ -223,7 +223,7 @@ class Chromosome{
     localSearch(){
         let ch = this.chromosome;
         
-        for(let id = ch.length/10; id < ch.length; id++) // except the first one
+        for(let id = Math.floor(ch.length/10); id < ch.length; id++) // except the first one
         {
             ch[id].localSearch();
         }

@@ -225,13 +225,19 @@ class Block extends Rectangle{
         }
         
         let point = possiblePositions.getSmallest();
-        console.log(this.id, possiblePositions, point)
+        // console.log(this.id, possiblePositions, point, this.intersects())
         if(!point)  return;
 
         let dd = this.intersects(new Rectangle(point, this.size));
-        if(!dd.result && point.manhattan() <= this.point.manhattan())
+        if(!dd.result && point.length() <= this.point.length())
+        {
             this.setPoint(point);
-        console.error('');
+            // console.log(' moved')
+        }
+        else
+        {
+            // console.error('move unsuccessful')
+        }
     }
 
     draw(beautify = false){

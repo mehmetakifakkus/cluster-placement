@@ -11,7 +11,9 @@ var step = 40;
 let file_list = [ 
     new File('design1.ai', 1200, 1600), 
     new File('design2.ai', 2400, 1600), 
-    new File('design3.ai', 120,80), 
+    new File('design3.ai', 80,120), 
+    new File('design3.ai', 80,120), 
+    new File('design3.ai', 80,120), 
     new File('renderdesign1.png', 800,800),
     new File('renderdesign2.png', 400,400),
     new File('renderdesign3.png', 1000,1000),
@@ -40,20 +42,24 @@ const initialize = function(file_text_list){
     paper.project.activeLayer.removeChildren();
     Util.drawCoordinateSystem(environment.x, environment.y, step);
 
-    ga = new GABuilder(poolSize, File.getSizeList(file_list));
-    
-    // !TODO: sonrasinda paneller ile dosyalar var, once panelleri koy cluster icinde
-    
     var t0 = performance.now();
-    // ga = fileGA(clusters.arranged, 'root')
-    console.log(ga)
 
-    for (let step = 0; step < 5; step++) {
-        ga.evolve();
+    let gas = []
+    for(let i=0; i<10; i++)
+    {
+        let tempGa = new GABuilder(poolSize, File.getSizeList(file_list));    
+    
+        for (let step = 0; step < 5; step++) {
+            tempGa.evolve();
+        }
+        gas.push(tempGa);
     }
 
-    draw(ga, new Point(0,0));
+    gas.sort((a,b) => {return b.best().fitnessValue - a.best().fitnessValue});
 
+    ga = gas[0]
+    console.log(gas)   
+    
     var t1 = performance.now()
     console.log("initialization took " + (t1 - t0).toFixed(3) + " milliseconds.")
 }
@@ -68,35 +74,6 @@ function generateFileList(file_text_list){
         else    
             return new File(splitted[0], 1, 1);
             
-    })
-}
-
-function draw(ga, point =  new Point(0,0)){
-
-    const isChildFile = (item) => {
-        return item.chromosome[0].content instanceof File;
-    }
-    
-    let layout = ga.best();
-    // console.log(layout)
-    
-    if(layout instanceof Chromosome)
-    {
-        // console.log(layout, ga)
-        if(isChildFile(layout))
-        {
-            layout.move(point)
-            layout.draw(true);
-        }
-    }
-
-    layout.chromosome.forEach((it)=>{
-        
-        if(it.content instanceof GABuilder)
-        {
-            // console.log(it.content, it.point)
-            draw(it.content, point.add(it.point))
-        }
     })
 }
 
@@ -155,15 +132,5 @@ function getGA(){
     return ga;
 }
 
-function getClusters(){
-    // return new Promise((resolve) => {
-    //     if(clusters)
-    //     {
-    //         resolve();
-    //         return clusters;
-    //     }
-    // })
-    return clusters;
-}
 
-export {initialize, draw, getGA, getClusters};
+export {initialize, getGA};

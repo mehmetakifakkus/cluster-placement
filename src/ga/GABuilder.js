@@ -138,7 +138,7 @@ export class GABuilder{
         let ch = this.genePool[this.selectionNo];
         let id = settings.selectedBlock;
 
-        for(id = ch.length/10; id < ch.length; id++) // except the first one
+        for(id = Math.floor(ch.length/10); id < ch.length; id++) // except the first one
         {
             ch.chromosome[id].localSearch();
         }

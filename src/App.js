@@ -15,16 +15,10 @@ class App extends React.Component {
     initialize(){
         paper.project.activeLayer.removeChildren();
         
-        var t0 = performance.now()
-
         initialize();
         let ga = getGA();
-        console.log(ga)
         this.setState({selectedGA: ga, active_ch: 0});
         
-
-        var t1 = performance.now()
-        console.log("initialization took " + (t1 - t0).toFixed(3) + " milliseconds.")
         ga.genePool[0].draw(true);
     }
 
