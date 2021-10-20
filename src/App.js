@@ -1,191 +1,201 @@
-// import {Row, Col, Carousel} from 'react-bootstrap';
-import paper from "paper";
-import { Button, Container, Row, Col } from 'reactstrap';
-import { Sketch } from './Sketch';
-import {GABuilder} from "./ga/GABuilder"
-import React from 'react';
-import {initialize, getGA, getClusters, draw} from "./main";
+/* eslint-disable react/jsx-indent-props */
+/* eslint-disable max-len */
+/* eslint-disable react/no-access-state-in-setstate */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/no-unused-state */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-filename-extension */
 
 import 'antd/dist/antd.css';
-import { Tree, Slider, Input} from 'antd';
 
-import settings from './Utils/Settings'
-import { Point } from "./geometry/Point";
-var path = require('path')
+import { Input, Slider, Tree } from 'antd';
+import paper from 'paper';
+import React from 'react';
+import { Col, Container, Row } from 'reactstrap';
+
+import { GABuilder } from './ga/GABuilder';
+import { Point } from './geometry/Point';
+import { draw, getGA, initialize } from './main';
+import { Sketch } from './Sketch';
+import settings from './Utils/Settings';
 
 settings.sliderValue = 40;
 
 const { TextArea } = Input;
-const defaultText2 = "design1.ai, 1200, 1600\n"+ 
-"design2.ai, 2400, 1600\n"+
-"design3.ai, 120, 80\n"+
-"renderdesign1.png, 800,800\n"+
-"renderdesign2.png, 400,400\n"+
-"renderdesign3.png, 1000,1000\n"+
-"renderdesign4.png, 1200,1200\n"+
-"sketchv1.jpeg, 800, 400\n"+
-"sketchv2.jpeg, 240,120\n"+
-"sketchv3.jpeg, 360,180";
+// const defaultText2 = 'design1.ai, 1200, 1600\n'
+// + 'design2.ai, 2400, 1600\n'
+// + 'design3.ai, 120, 80\n'
+// + 'renderdesign1.png, 800,800\n'
+// + 'renderdesign2.png, 400,400\n'
+// + 'renderdesign3.png, 1000,1000\n'
+// + 'renderdesign4.png, 1200,1200\n'
+// + 'sketchv1.jpeg, 800, 400\n'
+// + 'sketchv2.jpeg, 240,120\n'
+// + 'sketchv3.jpeg, 360,18';
 
-const defaultText1 = "design1.ai\n"+ 
-"design2.ai\n"+
-"design3.ai\n"+
-"renderdesign1.png, 800,800\n"+
-"renderdesign2.png, 400,400\n"+
-"renderdesign3.png, 1000,1000\n"+
-"renderdesign4.png, 1200,1200\n"+
-"sketchv1.jpeg, 800, 400\n"+
-"sketchv2.jpeg, 240,120\n"+
-"sketchv3.jpeg, 360,180";
+// const defaultText1 = 'design1.ai\n'
+// + 'design2.ai\n'
+// + 'design3.ai\n'
+// + 'renderdesign1.png, 800,800\n'
+// + 'renderdesign2.png, 400,400\n'
+// + 'renderdesign3.png, 1000,1000\n'
+// + 'renderdesign4.png, 1200,1200\n'
+// + 'sketchv1.jpeg, 800, 400\n'
+// + 'sketchv2.jpeg, 240, 120\n'
+// + 'sketchv3.jpeg, 360, 180';
 
-const defaultText = 
-// "idea.docx\n"+ 
-"P, models\n"+
-"P, renders\n"+
-"P, designs\n"+
-"5652.jpeg\n"+
-"5653.jpeg\n"+
-"5654.jpeg\n"+
-"5655.jpeg\n"+
-"5656.jpeg\n"+
-"5657.jpeg\n"+
-"5658.jpeg\n"+
-"5659.jpeg\n"+
-"5660.jpeg\n"+
-"5661.jpeg\n"+
-"5662.jpeg\n"+
-"5663.psd\n" +
-"5660_e1.psd\n"+
-"5660_e2.psd\n"+
-"5660_e3.psd\n"+
-"5660_e4.psd\n"+
-"5660_e5.psd\n"+
-"5660_e6.psd\n"+
-// "5660_e7.psd\n"+
-// "5660_e8.psd\n"+
-// "5660_e9.psd\n"+
-// "5660_e10.psd\n"+
-// "5660_e11.psd\n"+
-// "5660_e12.psd\n"+
-// "5661.psd\n"+
-// "5662.psd\n"+
-// "5663.psd\n"+
-// "model1.3dm\n"+
-// "model2.3dm\n"+
-// "model3.3dm\n"+
-// "modelmanu1.3dm\n"+
-// "modelmanu2.3dm\n"+
-// "modelmanu3.3dm\n"+
-// "renderdesign4.png, 1200,1200\n"+
-"sketchv1.jpeg, 800, 400\n"+
-"sketchv2.jpeg, 240,120\n"+
-"sketchv3.jpeg, 360,180\n"+
-"selam.jpeg\n"+
-"selam1.jpeg\n"+
-"selam2.jpeg\n"+
-"selam3.jpeg";
+const sampleFileExamples = {
+    list1: 'turntable animation.ocs\n'
++ 'turntable animation.mtl\n'
++ 'turntable animation.mpg\n'
++ 'turntable animation.obj\n'
++ 'turntable animation.skp',
+};
 
-
+// + 'P, models\n'// "idea.docx\n"
+// + 'P, renders\n'
+// + 'P, designs\n'
+// + '5652.jpeg\n'
+// + '5653.jpeg\n'
+// + '5654.jpeg\n'
+// + '5655.jpeg\n'
+// + '5656.jpeg\n'
+// + '5657.jpeg\n'
+// + '5658.jpeg\n'
+// + '5659.jpeg\n'
+// + '5660.jpeg\n'
+// + '5661.jpeg\n'
+// + '5662.jpeg\n'
+// + '5663.psd\n"'
+// + '5660_e1.psd\n'
+// + '5660_e2.psd\n'
+// + '5660_e3.psd\n'
+// + '5660_e4.psd\n'
+// + '5660_e5.psd\n'
+// + '5660_e6.psd\n'
+// + '5660_e7.psd\n'
+// + '5660_e8.psd\n'
+// + '5660_e9.psd\n'
+// + '5660_e10.psd\n'
+// + '5660_e11.psd\n'
+// + '5660_e12.psd\n'
+// + '5661.psd\n'
+// + '5662.psd\n'
+// + '5663.psd\n'
+// + 'model1.3dm\n'
+// + 'model2.3dm\n'
+// + 'model3.3dm\n'
+// + 'modelmanu1.3dm\n'
+// + 'modelmanu2.3dm\n'
+// + 'modelmanu3.3dm\n'
+// + 'renderdesign4.png, 1200,1200\n'
+// + 'sketchv1.jpeg, 800, 400\n'
+// + 'sketchv2.jpeg, 240,120\n'
+// + 'sketchv3.jpeg, 360,180\n'
+// + 'selam.jpeg\n'
+// + 'selam1.jpeg\n'
+// + 'selam2.jpeg\n'
+// + 'selam3.jpeg';
 
 class App extends React.Component {
-
-    state = {
-        active_ch: 0,
-        clusters: null,
-        selectedGA: getGA()
-    }
-
-    getTreeData = () => {
-        
-        const traverse = (ga) => {
-
-            let layout = ga.best();
-
-            let obj = new Object();
-            obj.title = ga.title;
-            obj.key = ga.id;
-            obj.data = ga;
-            
-            obj.children = layout.chromosome.map( (it) => {
-                if(it.content instanceof GABuilder)
-                    return traverse(it.content);
-                else
-                    return null;
-            });
-
-            obj.children = obj.children.filter(it => it !== null)
-
-            return obj;
-        }
-
-        let treeData = traverse(getGA());
-        console.log(treeData);
-        
-        console.log(treeData.data)
-        this.setState({selectedGA: treeData.data}); // auto select root cluster
-        this.setState({clusters: [treeData]});
+    constructor() {
+        super();
+        this.state = {
+            active_ch: 0,
+            clusters: null,
+            selectedGA: getGA(),
+        };
     }
 
     onSelect = (selectedKeys, info) => {
         paper.project.activeLayer.removeChildren();
         console.log('selected', info.node.data);
-        draw(info.node.data)
-    
-        this.setState({selectedGA: info.node.data});
+        draw(info.node.data);
+
+        this.setState({ selectedGA: info.node.data });
         // console.log(this.state.selectedGA)
     }
 
-    getTextInput = (e) =>{
+    getTreeData = () => {
+        const traverse = (ga) => {
+            const layout = ga.best();
+
+            const obj = {};
+            obj.title = ga.title;
+            obj.key = ga.id;
+            obj.data = ga;
+
+            obj.children = layout.chromosome.map((it) => {
+                if (it.content instanceof GABuilder) return traverse(it.content);
+                return null;
+            });
+
+            obj.children = obj.children.filter(it => it !== null);
+
+            return obj;
+        };
+
+        const treeData = traverse(getGA());
+        // console.log(treeData);
+
+        // console.log(treeData.data)
+        this.setState({ selectedGA: treeData.data }); // auto select root cluster
+        this.setState({ clusters: [treeData] });
+    }
+
+    getTextInput = (e) => {
         // console.log(e.target.value.split('\n'))
-        this.setState({textInput: e.target.value.split('\n')})
+        this.setState({ textInput: e.target.value.split('\n') });
     }
 
     sliderChange = (value) => {
-        this.setState({sliderValue: value})
+        this.setState({ sliderValue: value });
         settings.sliderValue = value;
         // console.log(value)
     }
 
     run = () => {
-        initialize(this.state.textInput || defaultText.split('\n'));
-        this.getTreeData();
+        const { textInput } = this.state;
+        initialize(textInput || sampleFileExamples.list1.split('\n'));
+        // this.getTreeData();
     }
 
-    evolve = () =>{
-        this.state.selectedGA.evolve();
-        
+    evolve = () => {
+        const { selectedGA } = this.state;
+        selectedGA.evolve();
+
         paper.project.activeLayer.removeChildren();
         draw();
     }
 
-    localSearch = ()=>{
-        this.state.selectedGA.localSearch();
-        
+    localSearch = () => {
+        const { selectedGA } = this.state;
+        selectedGA.localSearch();
+
         paper.project.activeLayer.removeChildren();
-        draw(this.state.selectedGA, new Point(0,0));
+        draw(selectedGA, new Point(0, 0));
     }
 
-    mutate(type){
+    mutate = (type) => {
         getGA().mutate(type);
-        this.setState({ active_ch: getGA().selectionNo }) 
+        this.setState({ active_ch: getGA().selectionNo });
     }
 
     render() {
-        
         return (
             <Container style={{ padding: '1rem' }}>
                 <Sketch />
-                
-                    <h3 style={{"margin":"0px 0px 10px 0px"}}>Genetic Algorithm Solution for Block Placement</h3>
+
+                <h3 style={{ margin: '0px 0px 10px 0px' }}>Genetic Algorithm Solution for Block Placement</h3>
                 <Row>
                     <Col md={4}>
                         <h5>Text List</h5>
 
-                        <TextArea rows={10} onChange={this.getTextInput} defaultValue={defaultText}/>
+                        <TextArea rows={10} onChange={this.getTextInput} defaultValue={sampleFileExamples.list1} />
                         <hr />
                         {/* <hr />
                         <Row style={{"margin":"-8px 0px -10px 5px"}}>
-                        <p> 
+                        <p>
                              <a href="#" onClick={()=>{this.initialize()}} className="alert-link"> Reinitialize </a> the gene pool.
                         </p>
                         </Row>
@@ -203,60 +213,80 @@ class App extends React.Component {
                         <br/>
                         <br/>
                         <p>
-                            <a href="#" className="alert-link" onClick={() => { this.mutate(6) }}>the last 3</a> 
+                            <a href="#" className="alert-link" onClick={() => { this.mutate(6) }}>the last 3</a>
                         </p>
                         </Row>
                     */}
-                        <Slider defaultValue={40} onAfterChange={this.sliderChange} marks={{0: 'Fill', 100: '2x1'}}/>
-                        <hr/>
+                        <Slider defaultValue={40} onAfterChange={this.sliderChange} marks={{ 0: 'Fill', 100: '2x1' }} />
+                        <hr />
                         <Tree
                             autoExpandParent
                             defaultExpandAll
                             onSelect={this.onSelect}
                             treeData={this.state.clusters}
                         />
+                        <Row style={{ margin: '40px 30px -10px 0px' }}>
+                            <button
+                                type="button"
+                                id="run"
+                                className="btn btn-warning btn-sm"
+                                onClick={() => { this.run(); }}
+                            >
+                              RUN
+                            </button>
+                            <button
+                                type="button"
+                                id="run"
+                                className="btn btn-warning btn-sm"
+                                onClick={() => { this.evolve(); }}
+                            >
+                              evolve
 
-                       
-                        <Row style={{"margin":"40px 30px -10px 0px"}}>
-                            
-                            <button type="button" id="run" className="btn btn-warning btn-sm" 
-                                onClick={() => {this.run()}}>RUN</button>
-                            <button type="button" id="run" className="btn btn-warning btn-sm" 
-                                onClick={() => {this.evolve()}}>evolve</button>
-                            <button type="button" id="run" className="btn btn-warning btn-sm" 
-                                onClick={() => {this.localSearch()}}>local</button>
-                                
-                                {/* <br/>
+                            </button>
+                            <button
+                                type="button"
+                                id="run"
+                                className="btn btn-warning btn-sm"
+                                onClick={() => { this.localSearch(); }}
+                            >
+                              local
+
+                            </button>
+
+                            {/* <br/>
                               <p>We can have info of <a href="#" onClick={()=>{console.log(getGA()?.genePool[GABuilder.selectionNo]);  this.getTreeData();}} className="alert-link"> active </a> chromosome.</p>           */}
                         </Row>
-                        
+
                         <br />
                     </Col>
 
                     <Col md={8}>
                         <canvas id="paperCanvas" height="600" width="800" style={{ border: '2px solid black' }} />
-                        <span style = {{margin: '10px'}}/>
+                        <span style={{ margin: '10px' }} />
                         <Row>
                             <div className="col-md-2">
-                                <button type="button" id="prev" className="btn btn-warning btn-sm" onClick={() => { this.state.selectedGA.prev(); this.setState({ active_ch: this.state.selectedGA.selectionNo }) }}>prev</button>
+                                <button type="button" id="prev" className="btn btn-warning btn-sm" onClick={() => { this.state.selectedGA.prev(); this.setState({ active_ch: this.state.selectedGA.selectionNo }); }}>prev</button>
                             </div>
                             <div className="col-md-4">
-                                <span id="info_chromosome">Chr. no: {this.state.selectedGA?.selectionNo}</span>
-                                <p id="info_fitness">Cluster fitness value: { this.state.selectedGA?.genePool[this.state.selectedGA.selectionNo].fitnessValue}</p>
+                                <span id="info_chromosome">
+                                  Chr. no:
+                                    {' '}
+                                    {this.state.selectedGA?.selectionNo}
+                                </span>
+                                <p id="info_fitness">
+                                  Cluster fitness value:
+                                    {' '}
+                                    { this.state.selectedGA?.genePool[this.state.selectedGA.selectionNo].fitnessValue}
+                                </p>
                                 {/* <span id="info_chromosome">Chr. no: {this.state.active_ch}</span> */}
                             </div>
                             <div className="col-md-2">
-                                <button type="button" id="next" className="btn btn-warning btn-sm" onClick={() => { this.state.selectedGA.next(); this.setState({ active_ch: this.state.selectedGA.selectionNo }) }}>next</button>
+                                <button type="button" id="next" className="btn btn-warning btn-sm" onClick={() => { this.state.selectedGA.next(); this.setState({ active_ch: this.state.selectedGA.selectionNo }); }}>next</button>
                             </div>
                         </Row>
                     </Col>
-                    
                 </Row>
-
-                
-
             </Container>
-
         );
     }
 }

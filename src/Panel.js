@@ -1,26 +1,25 @@
-import {Point} from './geometry/Point'
+import { Point } from './geometry/Point';
 
-export class Panel{
-
-    constructor(name, width, height){
+export class Panel {
+    constructor(name, width, height) {
         this.name = name;
         this.setWidth(width);
         this.setHeight(height);
     }
-    
-    setWidth(width){
+
+    setWidth(width) {
         this.width = width;
     }
 
-    setHeight(height){
+    setHeight(height) {
         this.height = height;
     }
 
-    getSize(){
+    getSize() {
         return new Point(this.width, this.height);
     }
 
-    static getNameList(file_list){
-        return file_list.map(it => it.name)
+    static getNameList(fileList) {
+        return fileList.map(it => it.name);
     }
 }

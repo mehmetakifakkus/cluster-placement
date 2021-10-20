@@ -1,366 +1,365 @@
 export const ratios10 = [{
     height: 10,
     width: 1,
-    value: 0.1
-  }, {
+    value: 0.1,
+}, {
     height: 9,
     width: 1,
-    value: 0.1111111111111111
-  }, {
+    value: 0.1111111111111111,
+}, {
     height: 8,
     width: 1,
-    value: 0.125
-  }, {
+    value: 0.125,
+}, {
     height: 7,
     width: 1,
-    value: 0.14285714285714285
-  }, {
+    value: 0.14285714285714285,
+}, {
     height: 6,
     width: 1,
-    value: 0.16666666666666666
-  }, {
+    value: 0.16666666666666666,
+}, {
     height: 5,
     width: 1,
-    value: 0.2
-  }, {
+    value: 0.2,
+}, {
     height: 9,
     width: 2,
-    value: 0.2222222222222222
-  }, {
+    value: 0.2222222222222222,
+}, {
     height: 4,
     width: 1,
-    value: 0.25
-  }, {
+    value: 0.25,
+}, {
     height: 8,
     width: 2,
-    value: 0.25
-  }, {
+    value: 0.25,
+}, {
     height: 7,
     width: 2,
-    value: 0.2857142857142857
-  }, {
+    value: 0.2857142857142857,
+}, {
     height: 10,
     width: 3,
-    value: 0.3
-  }, {
+    value: 0.3,
+}, {
     height: 3,
     width: 1,
-    value: 0.3333333333333333
-  }, {
+    value: 0.3333333333333333,
+}, {
     height: 8,
     width: 3,
-    value: 0.375
-  }, {
+    value: 0.375,
+}, {
     height: 5,
     width: 2,
-    value: 0.4
-  }, {
+    value: 0.4,
+}, {
     height: 7,
     width: 3,
-    value: 0.42857142857142855
-  }, {
+    value: 0.42857142857142855,
+}, {
     height: 9,
     width: 4,
-    value: 0.4444444444444444
-  }, {
+    value: 0.4444444444444444,
+}, {
     height: 2,
     width: 1,
-    value: 0.5
-  }, {
+    value: 0.5,
+}, {
     height: 9,
     width: 5,
-    value: 0.5555555555555556
-  }, {
+    value: 0.5555555555555556,
+}, {
     height: 7,
     width: 4,
-    value: 0.5714285714285714
-  }, {
+    value: 0.5714285714285714,
+}, {
     height: 5,
     width: 3,
-    value: 0.6
-  }, {
+    value: 0.6,
+}, {
     height: 8,
     width: 5,
-    value: 0.625
-  }, {
+    value: 0.625,
+}, {
     height: 3,
     width: 2,
-    value: 0.6666666666666666
-  }, {
+    value: 0.6666666666666666,
+}, {
     height: 10,
     width: 7,
-    value: 0.7
-  }, {
+    value: 0.7,
+}, {
     height: 7,
     width: 5,
-    value: 0.7142857142857143
-  }, {
+    value: 0.7142857142857143,
+}, {
     height: 4,
     width: 3,
-    value: 0.75
-  }, {
+    value: 0.75,
+}, {
     height: 9,
     width: 7,
-    value: 0.7777777777777778
-  }, {
+    value: 0.7777777777777778,
+}, {
     height: 5,
     width: 4,
-    value: 0.8
-  }, {
+    value: 0.8,
+}, {
     height: 6,
     width: 5,
-    value: 0.8333333333333334
-  }, {
+    value: 0.8333333333333334,
+}, {
     height: 7,
     width: 6,
-    value: 0.8571428571428571
-  }, {
+    value: 0.8571428571428571,
+}, {
     height: 8,
     width: 7,
-    value: 0.875
-  }, {
+    value: 0.875,
+}, {
     height: 9,
     width: 8,
-    value: 0.8888888888888888
-  }, {
+    value: 0.8888888888888888,
+}, {
     height: 10,
     width: 9,
-    value: 0.9
-  }, {
+    value: 0.9,
+}, {
     height: 1,
     width: 1,
-    value: 1
-  }, {
+    value: 1,
+}, {
     height: 9,
     width: 10,
-    value: 1.1111111111111112
-  }, {
+    value: 1.1111111111111112,
+}, {
     height: 8,
     width: 9,
-    value: 1.125
-  }, {
+    value: 1.125,
+}, {
     height: 7,
     width: 8,
-    value: 1.1428571428571428
-  }, {
+    value: 1.1428571428571428,
+}, {
     height: 6,
     width: 7,
-    value: 1.1666666666666667
-  }, {
+    value: 1.1666666666666667,
+}, {
     height: 5,
     width: 6,
-    value: 1.2
-  }, {
+    value: 1.2,
+}, {
     height: 4,
     width: 5,
-    value: 1.25
-  }, {
+    value: 1.25,
+}, {
     height: 7,
     width: 9,
-    value: 1.2857142857142858
-  }, {
+    value: 1.2857142857142858,
+}, {
     height: 3,
     width: 4,
-    value: 1.3333333333333333
-  }, {
+    value: 1.3333333333333333,
+}, {
     height: 5,
     width: 7,
-    value: 1.4
-  }, {
+    value: 1.4,
+}, {
     height: 7,
     width: 10,
-    value: 1.4285714285714286
-  }, {
+    value: 1.4285714285714286,
+}, {
     height: 2,
     width: 3,
-    value: 1.5
-  }, {
+    value: 1.5,
+}, {
     height: 5,
     width: 8,
-    value: 1.6
-  }, {
+    value: 1.6,
+}, {
     height: 3,
     width: 5,
-    value: 1.6666666666666667
-  }, {
+    value: 1.6666666666666667,
+}, {
     height: 4,
     width: 7,
-    value: 1.75
-  }, {
+    value: 1.75,
+}, {
     height: 5,
     width: 9,
-    value: 1.8
-  }, {
+    value: 1.8,
+}, {
     height: 1,
     width: 2,
-    value: 2
-  }, {
+    value: 2,
+}, {
     height: 4,
     width: 9,
-    value: 2.25
-  }, {
+    value: 2.25,
+}, {
     height: 3,
     width: 7,
-    value: 2.3333333333333335
-  }, {
+    value: 2.3333333333333335,
+}, {
     height: 2,
     width: 5,
-    value: 2.5
-  }, {
+    value: 2.5,
+}, {
     height: 3,
     width: 8,
-    value: 2.6666666666666665
-  }, {
+    value: 2.6666666666666665,
+}, {
     height: 1,
     width: 3,
-    value: 3
-  }, {
+    value: 3,
+}, {
     height: 3,
     width: 10,
-    value: 3.3333333333333335
-  }, {
+    value: 3.3333333333333335,
+}, {
     height: 2,
     width: 7,
-    value: 3.5
-  }, {
+    value: 3.5,
+}, {
     height: 1,
     width: 4,
-    value: 4
-  }, {
+    value: 4,
+}, {
     height: 2,
     width: 9,
-    value: 4.5
-  }, {
+    value: 4.5,
+}, {
     height: 1,
     width: 5,
-    value: 5
-  }, {
+    value: 5,
+}, {
     height: 1,
     width: 6,
-    value: 6
-  }, {
+    value: 6,
+}, {
     height: 1,
     width: 7,
-    value: 7
-  }, {
+    value: 7,
+}, {
     height: 1,
     width: 8,
-    value: 8
-  }, {
+    value: 8,
+}, {
     height: 1,
     width: 9,
-    value: 9
-  }, {
+    value: 9,
+}, {
     height: 1,
     width: 10,
-    value: 10
-}]
+    value: 10,
+}];
 
 const ratios5 = [{
     height: 5,
     width: 1,
-    value: 0.2
-  }, {
+    value: 0.2,
+}, {
     height: 4,
     width: 1,
-    value: 0.25
-  }, {
+    value: 0.25,
+}, {
     height: 3,
     width: 1,
-    value: 0.3333333333333333
-  }, {
+    value: 0.3333333333333333,
+}, {
     height: 5,
     width: 2,
-    value: 0.4
-  }, {
+    value: 0.4,
+}, {
     height: 2,
     width: 1,
-    value: 0.5
-  }, {
+    value: 0.5,
+}, {
     height: 5,
     width: 3,
-    value: 0.6
-  }, {
+    value: 0.6,
+}, {
     height: 3,
     width: 2,
-    value: 0.6666666666666666
-  }, {
+    value: 0.6666666666666666,
+}, {
     height: 4,
     width: 3,
-    value: 0.75
-  }, {
+    value: 0.75,
+}, {
     height: 5,
     width: 4,
-    value: 0.8
-  }, {
+    value: 0.8,
+}, {
     height: 1,
     width: 1,
-    value: 1
-  }, {
+    value: 1,
+}, {
     height: 4,
     width: 5,
-    value: 1.25
-  }, {
+    value: 1.25,
+}, {
     height: 3,
     width: 4,
-    value: 1.3333333333333333
-  }, {
+    value: 1.3333333333333333,
+}, {
     height: 2,
     width: 3,
-    value: 1.5
-  }, {
+    value: 1.5,
+}, {
     height: 3,
     width: 5,
-    value: 1.6666666666666667
-  }, {
+    value: 1.6666666666666667,
+}, {
     height: 1,
     width: 2,
-    value: 2
-  }, {
+    value: 2,
+}, {
     height: 2,
     width: 5,
-    value: 2.5
-  }, {
+    value: 2.5,
+}, {
     height: 1,
     width: 3,
-    value: 3
-  }, {
+    value: 3,
+}, {
     height: 1,
     width: 4,
-    value: 4
-  }, {
+    value: 4,
+}, {
     height: 1,
     width: 5,
-    value: 5
-  }]
+    value: 5,
+}];
 
-export function getClosestRatio5(w, h){
-    let ratio = w / h;
-    let closest = null, delta = 999;
+export function getClosestRatio5(w, h) {
+    const ratio = w / h;
+    let closest = null; let
+        delta = 999;
 
-    ratios5.forEach(it =>{
-        if(Math.abs(ratio - it.value) < delta )
-        {
+    ratios5.forEach((it) => {
+        if (Math.abs(ratio - it.value) < delta) {
             delta = Math.abs(ratio - it.value);
             closest = it;
         }
-    })
+    });
 
     return closest;
 }
 
-export function getClosestRatio10(w, h){
-    let ratio = w / h;
-    let closest = null, delta = 999;
+export function getClosestRatio10(w, h) {
+    const ratio = w / h;
+    let closest = null; let
+        delta = 999;
 
-    ratios10.forEach(it =>{
-        if(Math.abs(ratio - it.value) < delta )
-        {
+    ratios10.forEach((it) => {
+        if (Math.abs(ratio - it.value) < delta) {
             delta = Math.abs(ratio - it.value);
             closest = it;
         }
-    })
+    });
 
     return closest;
 }
-  

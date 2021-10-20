@@ -1,2 +1,2 @@
-const settings = {}
-export default settings
+const settings = {};
+export default settings;

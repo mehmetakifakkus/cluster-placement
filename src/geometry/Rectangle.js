@@ -1,22 +1,18 @@
-import {Point} from "./Point"
-import paper from "paper";
+import paper from 'paper';
 
-export class Rectangle{
+import { Point } from './Point';
 
-    constructor(point, size){
-        
-        if(point instanceof Point && size instanceof Point)
-        {
+export class Rectangle {
+    constructor(point, size) {
+        if (point instanceof Point && size instanceof Point) {
             this.point = point;
             this.size = size;
-        }
-        else
-            console.error('parameter error')
+        } else { console.error('parameter error'); }
 
         this.setAll();
     }
 
-    setAll(){
+    setAll() {
         this.x = this.point.x;
         this.y = this.point.y;
 
@@ -33,28 +29,27 @@ export class Rectangle{
         this.topRight = this.point.add([this.width, 0]);
         this.bottomLeft = this.point.add([0, this.height]);
         // this.bottomRight = this.point.add(this.size);
-        
+
         // this.leftCenter = this.point.add([0, this.height / 2]);
         // this.topCenter = this.point.add([this.width / 2, 0]);
         // this.rightCenter = this.point.add([this.width, this.height / 2]);
         // this.bottomCenter = this.point.add([this.width / 2, this.height]);
 
         this.area = this.getArea();
-        this.rectangle = new paper.Rectangle({point: this.point, size: this.size});
+        this.rectangle = new paper.Rectangle({ point: this.point, size: this.size });
     }
 
-    setSize(size){
+    setSize(size) {
         this.size = size;
         this.setAll();
     }
 
-    setPoint(point){
+    setPoint(point) {
         this.point = point;
         this.setAll();
     }
 
-    getArea(){
+    getArea() {
         return this.width * this.height;
     }
-
 }
