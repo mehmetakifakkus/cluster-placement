@@ -46,56 +46,75 @@ const { TextArea } = Input;
 
 const sampleFileExamples = {
     list1: 'turntable animation.ocs\n'
-+ 'turntable animation.mtl\n'
-+ 'turntable animation.mpg\n'
-+ 'turntable animation.obj\n'
-+ 'turntable animation.skp',
+        + 'turntable animation.mtl\n'
+        + 'turntable animation.mpg\n'
+        + 'turntable animation.obj\n'
+        + 'turntable animation.skp',
+
+    list2: 'turntable animation1.ocs\n'
+        + 'turntable animation2.ocs\n'
+        + 'turntable animation3.ocs\n'
+        + 'turntable animation4.ocs\n'
+        + 'turntable animation.mtl\n'
+        + 'turntable animation.mpg\n'
+        + 'turntable animation.obj\n'
+        + 'turntable animation.skp',
+
+    list3: 'turntable animation11.ocs\n'
+        + 'turntable animation12.ocs\n'
+        + 'turntable animation13.ocs\n'
+        + 'turntable animation14.ocs\n'
+        + 'turntable animation.mtl\n'
+        + 'turntable animation.mpg\n'
+        + 'turntable animation.obj\n'
+        + 'turntable animation.skp',
+    list4: 'P, models\n'// "idea.docx\n"
+        + 'P, renders\n'
+        + 'P, designs\n'
+        + '5652.jpeg\n'
+        + '5653.jpeg\n'
+        + '5654.jpeg\n'
+        + '5655.jpeg\n'
+        + '5656.jpeg\n'
+        + '5657.jpeg\n'
+        + '5658.jpeg\n'
+        + '5659.jpeg\n'
+        + '5660.jpeg\n'
+        + '5661.jpeg\n'
+        + '5662.jpeg\n'
+        + '5663.psd\n'
+        + '5660_e1.psd\n'
+        + '5660_e2.psd\n'
+        + '5660_e3.psd\n'
+        + '5660_e4.psd\n'
+        + '5660_e5.psd\n'
+        + '5660_e6.psd\n'
+        + '5660_e7.psd\n'
+        + '5660_e8.psd\n'
+        + '5660_e9.psd\n'
+        + '5660_e10.psd\n'
+        + '5660_e11.psd\n'
+        + '5660_e12.psd\n'
+        + '5661.psd\n'
+        + '5662.psd\n'
+        + '5663.psd\n'
+        + 'model1.3dm\n'
+        + 'model2.3dm\n'
+        + 'model3.3dm\n'
+        + 'modelmanu1.3dm\n'
+        + 'modelmanu2.3dm\n'
+        + 'modelmanu3.3dm\n'
+        + 'renderdesign4.png, 1200,1200\n'
+        + 'sketchv1.jpeg, 800, 400\n'
+        + 'sketchv2.jpeg, 240,120\n'
+        + 'sketchv3.jpeg, 360,180\n'
+        + 'selam.jpeg\n'
+        + 'selam1.jpeg\n'
+        + 'selam2.jpeg\n'
+        + 'selam3.jpeg',
 };
 
-// + 'P, models\n'// "idea.docx\n"
-// + 'P, renders\n'
-// + 'P, designs\n'
-// + '5652.jpeg\n'
-// + '5653.jpeg\n'
-// + '5654.jpeg\n'
-// + '5655.jpeg\n'
-// + '5656.jpeg\n'
-// + '5657.jpeg\n'
-// + '5658.jpeg\n'
-// + '5659.jpeg\n'
-// + '5660.jpeg\n'
-// + '5661.jpeg\n'
-// + '5662.jpeg\n'
-// + '5663.psd\n"'
-// + '5660_e1.psd\n'
-// + '5660_e2.psd\n'
-// + '5660_e3.psd\n'
-// + '5660_e4.psd\n'
-// + '5660_e5.psd\n'
-// + '5660_e6.psd\n'
-// + '5660_e7.psd\n'
-// + '5660_e8.psd\n'
-// + '5660_e9.psd\n'
-// + '5660_e10.psd\n'
-// + '5660_e11.psd\n'
-// + '5660_e12.psd\n'
-// + '5661.psd\n'
-// + '5662.psd\n'
-// + '5663.psd\n'
-// + 'model1.3dm\n'
-// + 'model2.3dm\n'
-// + 'model3.3dm\n'
-// + 'modelmanu1.3dm\n'
-// + 'modelmanu2.3dm\n'
-// + 'modelmanu3.3dm\n'
-// + 'renderdesign4.png, 1200,1200\n'
-// + 'sketchv1.jpeg, 800, 400\n'
-// + 'sketchv2.jpeg, 240,120\n'
-// + 'sketchv3.jpeg, 360,180\n'
-// + 'selam.jpeg\n'
-// + 'selam1.jpeg\n'
-// + 'selam2.jpeg\n'
-// + 'selam3.jpeg';
+const defaultList = sampleFileExamples.list4;
 
 class App extends React.Component {
     constructor() {
@@ -156,7 +175,7 @@ class App extends React.Component {
 
     run = () => {
         const { textInput } = this.state;
-        initialize(textInput || sampleFileExamples.list1.split('\n'));
+        initialize(textInput || defaultList.split('\n'));
         // this.getTreeData();
     }
 
@@ -191,7 +210,7 @@ class App extends React.Component {
                     <Col md={4}>
                         <h5>Text List</h5>
 
-                        <TextArea rows={10} onChange={this.getTextInput} defaultValue={sampleFileExamples.list1} />
+                        <TextArea rows={10} onChange={this.getTextInput} defaultValue={defaultList} />
                         <hr />
                         {/* <hr />
                         <Row style={{"margin":"-8px 0px -10px 5px"}}>

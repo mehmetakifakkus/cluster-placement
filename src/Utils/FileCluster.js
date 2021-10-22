@@ -50,7 +50,7 @@ export class FileCluster {
                 value.forEach((name) => {
                     let newKey = name[0];
 
-                    if (isNumeric(key)) { newKey = getNumberSeries(name); }
+                    if (isNumeric(newKey)) { newKey = getNumberSeries(name); }
 
                     const oldList = subMap.get(newKey) || []; // split the string as the first character and the rest
                     const rest = name.substr(newKey.length);
@@ -223,6 +223,12 @@ function generateRootClusters(lst) {
             listNew.push(new Cluster(`cluster_${clusterNo++}`, temp));
         }
     }
+
+    // create a cluster from clusters consists of one child
+    const listNew2 = [];
+    listNew.forEach((it) => {
+        listNew2.push(it);
+    });
 
     lst[0].children = listNew;
     return lst;

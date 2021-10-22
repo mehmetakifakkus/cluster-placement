@@ -30,7 +30,7 @@ export class SimpleLayout {
                 this.itemList[counter++].point = new Point(x * size.width, y * size.height);
             }
         }
-s
+
         for (let x = 0; x < result.remain; x++) {
             this.itemList[counter++].point = new Point(x * size.width, y * size.height);
             // console.log(new Point(x * size.width, y * size.height))
