@@ -1,70 +1,118 @@
-# Getting Started with Create React App
+# Cluster Placement: Genetik Algoritma ile Blok Yerleşimi
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Bu proje, dosyaları isimlerine göre **kümeleyip** her kümeyi ve içindeki dosyaları bir tuval üzerinde
+dikdörtgen bloklar olarak **sıkı ve düzenli** biçimde yerleştiren bir React uygulamasıdır.
+Yerleşimi **hiyerarşik bir genetik algoritma (GA)** bulur.
 
-## Available Scripts
+Örnek kullanım: bir tasarımcının proje klasöründeki `design1.ai`, `renderdesign1.png`, `sketchv1.jpeg` gibi
+dosyaları, birbiriyle ilgili olanlar yan yana duracak şekilde bir panoya (mood board / galeri görünümü)
+yerleştirmek.
 
-In the project directory, you can run:
+## Nasıl çalışır?
 
-### `npm start`
+### 1. Girdi (`src/App.js`)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Soldaki metin kutusuna her satıra bir dosya yazılır:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```
+isim, genişlik, yükseklik
+```
 
-### `npm test`
+```
+design1.ai, 1200, 1600
+renderdesign1.png, 800, 800
+sketchv1.jpeg, 800, 400
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Boyut verilmezse dosya 1×1 kabul edilir.
 
-### `npm run build`
+### 2. Boyutları sadeleştirme (`src/File.js`, `src/Utils/Ratios.js`)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Her dosyanın çözünürlüğü küçük bir en-boy oranına indirilir (ör. 1200×1600 → 3×4). Sadeleşmiş oran
+10'u aşıyorsa en yakın "güzel" orana yuvarlanır. Böylece GA küçük bir ızgara üzerinde çalışır.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 3. İsme göre kümeleme (`src/Utils/FileCluster.js`)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Dosya adları ortak önek ağacına (prefix tree) ayrılır:
 
-### `npm run eject`
+- `design1.ai`, `design2.ai`, `design3.ai` → `design` kümesi
+- `renderdesign1..4.png` → `renderdesign` kümesi
+- `sketchv1..3.jpeg` → `sketchv` kümesi
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Tek çocuklu dallar birleştirilir (`arrange`), sonuçta iç içe bir küme hiyerarşisi oluşur.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 4. Hiyerarşik genetik algoritma (`src/main.js`, `src/ga/`)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+- Her küme için ayrı bir `GABuilder` (10 kromozomluk havuz) oluşturulur. Alt kümeler, üst kümenin
+  içinde **tek bir blok** gibi davranır; bu bloğun boyutu alt kümenin en iyi yerleşiminin sınır kutusudur.
+- **Kromozom** (`Chromosome.js`): blokların konumlarından oluşan bir yerleşimdir. İlk blok (0,0)'a
+  konur; diğerleri daha önce yerleşmiş blokların sağ-üst veya sol-alt köşelerine rastgele yapıştırılır.
+  Çakışma olursa 30 kez yeniden denenir (`Block.changePosAbit2`).
+- **Evrim** (`GABuilder.evolve`, 5 nesil): havuzun kötü yarısı atılır, en iyi kromozom mutasyona
+  uğratılarak havuz yeniden doldurulur:
+  - `mutate5`: blokların yarısını yeniden yerleştirir
+  - `mutate6`: en küçük blokları yeniden yerleştirir
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### 5. Uygunluk fonksiyonu (`Chromosome.fitnessFunction`)
 
-## Learn More
+İki ölçütün ağırlıklı ortalamasıdır:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+| Ölçüt | Tanım | Amaç |
+|-------|-------|------|
+| **f1, doluluk** | blok alanları toplamı / sınır kutusu alanı | boşluğu azaltmak |
+| **f2, en-boy oranı** | sınır kutusu oranının ~1.8'e yakınlığı | yatay, ekrana uygun bir düzen |
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Arayüzdeki **Fill ↔ 2x1** slider'ı bu iki ölçütün ağırlığını ayarlar (varsayılan: 80, oran ağırlıklı).
 
-### Code Splitting
+### 6. Görselleştirme (`src/main.js → draw`, paper.js)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- Sonuç `<canvas>` üzerinde renkli dikdörtgenler olarak çizilir.
+- Soldaki **Tree** bileşeni küme hiyerarşisini gösterir; bir kümeye tıklayınca o kümenin yerleşimi çizilir.
+- **prev / next** düğmeleriyle havuzdaki diğer kromozomlar ve fitness değerleri incelenebilir.
 
-### Analyzing the Bundle Size
+## Proje yapısı
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```
+src/
+├── App.js               # Arayüz: metin girişi, slider, küme ağacı, tuval
+├── main.js              # Kümeleme + hiyerarşik GA kurulumu ve çizim
+├── File.js              # Dosya modeli ve oran sadeleştirme
+├── ga/
+│   ├── GABuilder.js     # Gen havuzu, seçilim ve evrim
+│   ├── Chromosome.js    # Yerleşim, mutasyonlar, uygunluk fonksiyonu
+│   └── Block.js         # Tek bir blok ve çakışmasız konumlandırma
+├── geometry/            # Point, Rectangle
+└── Utils/
+    ├── FileCluster.js   # İsim önekine göre kümeleme
+    ├── Ratios.js        # En yakın en-boy oranı tabloları
+    ├── Settings.js      # Paylaşılan ayarlar (slider değeri)
+    └── Utilities.js     # Yardımcı fonksiyonlar
+```
 
-### Making a Progressive Web App
+## Teknolojiler
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+React 17 (Create React App), [paper.js](http://paperjs.org/) (çizim), antd, reactstrap ve bootstrap (arayüz).
 
-### Advanced Configuration
+## Çalıştırma
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```bash
+npm install
+```
 
-### Deployment
+```bash
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Uygulama [http://localhost:3000](http://localhost:3000) adresinde açılır. Metin kutusunu düzenleyip
+**RUN** düğmesine basarak yerleşimi oluşturabilirsiniz.
 
-### `npm run build` fails to minify
+Üretim derlemesi için:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```bash
+npm run build
+```
+
+## Durum
+
+Proje deneysel / prototip aşamasındadır. Henüz test yoktur ve kodda deneme amaçlı, yorum satırına
+alınmış kısımlar bulunmaktadır.
