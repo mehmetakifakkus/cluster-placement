@@ -4,6 +4,8 @@ Bu proje, dosyaları isimlerine göre **kümeleyip** her kümeyi ve içindeki do
 dikdörtgen bloklar olarak **sıkı ve düzenli** biçimde yerleştiren bir React uygulamasıdır.
 Yerleşimi **hiyerarşik bir genetik algoritma (GA)** bulur.
 
+**Canlı demo:** https://mehmetakifakkus.github.io/cluster-placement/
+
 Örnek kullanım: bir tasarımcının proje klasöründeki `design1.ai`, `renderdesign1.png`, `sketchv1.jpeg` gibi
 dosyaları, birbiriyle ilgili olanlar yan yana duracak şekilde bir panoya (mood board / galeri görünümü)
 yerleştirmek.
@@ -105,6 +107,10 @@ npm start
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde açılır. Metin kutusunu düzenleyip
 **RUN** düğmesine basarak yerleşimi oluşturabilirsiniz.
+
+> **Not:** react-scripts 4, Node 17 ve üzeri sürümlerde çalışmaz; yerelde Node 16 kullanın.
+> `clusterBasedGA` dalına yapılan her push, `.github/workflows/deploy-pages.yml` ile
+> derlenip GitHub Pages'e yayınlanır.
 
 Üretim derlemesi için:
 
