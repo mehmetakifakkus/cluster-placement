@@ -2,9 +2,9 @@
 import paper from "paper";
 import { Button, Container, Row, Col } from 'reactstrap';
 import { Sketch } from './Sketch';
-import {GABuilder} from "./ga/GABuilder"
 import React from 'react';
 import {initialize, getGA, getClusters, draw} from "./main";
+import {buildTreeData} from './Utils/treeData';
 
 import 'antd/dist/antd.css';
 import { Tree, Slider, Input} from 'antd';
@@ -85,29 +85,7 @@ class App extends React.Component {
 
     getTreeData = () => {
         
-        const traverse = (ga) => {
-
-            let layout = ga.best();
-
-            let obj = new Object();
-            obj.title = ga.title;
-            obj.key = ga.id;
-            obj.data = ga;
-            
-            obj.children = layout.chromosome.map( (it) => {
-                if(it.content instanceof GABuilder)
-                    return traverse(it.content);
-                else
-                    return null;
-            });
-
-            if(obj.children[0] == null)
-                obj.children = null
-
-            return obj;
-        }
-
-        let treeData = traverse(getGA());
+        let treeData = buildTreeData(getGA());
         console.log(treeData);
         
         console.log(treeData.data)

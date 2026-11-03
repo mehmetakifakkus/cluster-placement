@@ -6,7 +6,8 @@ import {Point} from './geometry/Point'
 import {StringCluster} from './Utils/StringCluster'
 import {FileCluster} from './Utils/FileCluster'
 import {parseFileList} from './Utils/parseFileList'
-import Chromosome from "./ga/Chromosome";
+import {colors} from "./ga/Chromosome";
+import {placeCluster} from "./Utils/placement";
 
 var environment = new paper.Point(32, 30)
 var step = 20;
@@ -77,33 +78,12 @@ const initialize = function(file_text_list){
     console.log("initialization took " + (t1 - t0).toFixed(3) + " milliseconds.")
 }
 
-function draw(ga, point =  new Point(0,0)){
-
-    const isChildFile = (item) => {
-        return item.chromosome[0].content instanceof File;
-    }
-    
-    let layout = ga.best();
-    // console.log(layout)
-    
-    if(layout instanceof Chromosome)
-    {
-        // console.log(layout, ga)
-        if(isChildFile(layout))
-        {
-            layout.move(point)
-            layout.draw(true);
-        }
-    }
-
-    layout.chromosome.forEach((it)=>{
-        
-        if(it.content instanceof GABuilder)
-        {
-            // console.log(it.content, it.point)
-            draw(it.content, point.add(it.point))
-        }
-    })
+// Draws every file of the cluster (and of its sub clusters) at its absolute
+// position, one color per cluster.
+function draw(ga, point = new Point(0,0)){
+    placeCluster(ga, point).forEach(({block, cluster}) => {
+        block.draw(true, colors[cluster % colors.length]);
+    });
 }
 
 function fileGA(map, title){
@@ -172,4 +152,4 @@ function getClusters(){
     return clusters;
 }
 
-export {initialize, draw, getGA, getClusters};
+export {initialize, draw, getGA, getClusters, fileGA};
