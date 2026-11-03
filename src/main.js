@@ -5,6 +5,7 @@ import {File} from './File'
 import {Point} from './geometry/Point'
 import {StringCluster} from './Utils/StringCluster'
 import {FileCluster} from './Utils/FileCluster'
+import {parseFileList} from './Utils/parseFileList'
 import Chromosome from "./ga/Chromosome";
 
 var environment = new paper.Point(32, 30)
@@ -56,7 +57,7 @@ const initialize = function(file_text_list){
     
     // let clusters = new StringCluster(File.getNameList(file_list));
     
-    clusters = new FileCluster(generateFileList(file_text_list));
+    clusters = new FileCluster(parseFileList(file_text_list));
     console.log(clusters.arranged)
     printMap(clusters.arranged)
     
@@ -74,19 +75,6 @@ const initialize = function(file_text_list){
 
     var t1 = performance.now()
     console.log("initialization took " + (t1 - t0).toFixed(3) + " milliseconds.")
-}
-
-// get file list from the textBox 
-// and create the File object
-function generateFileList(file_text_list){
-    return file_text_list.map((it) => {
-        let splitted = it.split(',');
-        if(splitted.length === 3)
-            return new File(splitted[0], splitted[1], splitted[2]);
-        else    
-            return new File(splitted[0], 1, 1);
-            
-    })
 }
 
 function draw(ga, point =  new Point(0,0)){
