@@ -4,7 +4,7 @@ import Util from "../Utils/Utilities"
 import {Point} from "../geometry/Point"
 import settings from '../Utils/Settings'
 
-const colors = ['red', 'green', 'blue', 'black', 'purple', 'brown', '#dddddd', '#444444', '#888888', '#bbbbbb', '#AB0902', '#104C90']
+export const colors = ['red', 'green', 'blue', 'black', 'purple', 'brown', '#dddddd', '#444444', '#888888', '#bbbbbb', '#AB0902', '#104C90']
 
 
 class Chromosome{
