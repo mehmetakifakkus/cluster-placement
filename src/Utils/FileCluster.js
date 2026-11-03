@@ -1,134 +1,97 @@
-import {File} from '../File'
+// Clusters files by the shape of their names.
+//
+// A name is split into tokens: every run of digits is one token, every other
+// character is a token of its own ("img10.png" -> i, m, g, 10, ., p, n, g).
+// The tokens are put into a prefix tree, so files that share a prefix end up
+// in the same cluster. Because a number is a single token, "img1", "img2" and
+// "img10" are siblings, instead of "img10" being nested under "img1".
+//
+// When a level holds two or more numbered entries next to named ones (for
+// example "model1", "model2" and "modelmanu..."), the numbered entries are
+// wrapped into one series cluster titled with their range ("1–2"), so a
+// numbered series is laid out as one block.
+//
+// `arranged` is a Map with a single "root" key. Every value below it is either
+// a File (a leaf) or another Map (a sub cluster). Map keys are unique labels.
 
 export class FileCluster {
-    constructor(file_list) {
-  
-        this.file_list = file_list;
+  constructor(file_list) {
+    this.file_list = file_list;
 
-        this.map = new Map();
-        this.map.set("root", File.getNameList(file_list));
-  
-        this.clustered = this.createSubMap(this.map);
+    const items = file_list.map((file) => ({ file, tokens: tokenize(file.name) }));
+    this.arranged = new Map([['root', buildLevel(items)]]);
+  }
+}
 
-        this.arranged = arrange(this.clustered);
-        this.assignFiles(this.arranged, '');
+export function tokenize(name) {
+  return name.match(/\d+|\D/gu) || [];
+}
+
+const isNumber = (token) => /^\d+$/.test(token);
+
+// Builds one level of the tree from items whose shared prefix is already used up.
+function buildLevel(items) {
+  const level = new Map();
+  const groups = new Map(); // next token -> items continuing with that token
+
+  for (const { file, tokens } of items) {
+    if (tokens.length === 0) {
+      addUnique(level, file.name, file); // the whole name is consumed: a leaf
+      continue;
     }
-  
-    createSubMap(map) {
-      for (let [key, value] of map) {
-        // console.log(key + " = " + value);
-        let subMap = new Map();
-  
-        if (Array.isArray(value)) {
-          value.forEach((name) => {
-            var firstChar = name[0];
-            var oldList = subMap.get(firstChar) || []; // split the string as the first character and the rest
-            var rest = name.substr(1);
-            //console.log(firstChar, rest);
-  
-            if (rest !== undefined) {
-              if (rest.length > 1) oldList.push(rest);
-            }
-  
-            subMap.set(firstChar, oldList);
-          });
-        }
-  
-        //console.log("aaa", subMap);
-  
-        // if child is an array consisting one child, destruct the array
-        for (let [key, value] of subMap) {
-          // console.log(key + " = " + value + "  " + Array.isArray(value));
-          if (value.length == 1) subMap.set(key, value[0]);
-        }
-  
-        //console.log(getFirstValueofMap(subMap));
-  
-        // if there is a single child, then terminate creating sub children
-        if (subMap.size > 1 || getFirstValueofMap(subMap).value.length > 1) {
-          map.set(key, subMap);
-          this.createSubMap(subMap);
-        }
-        //else map.set(key, value);
+    const [head, ...rest] = tokens;
+    if (!groups.has(head)) groups.set(head, []);
+    groups.get(head).push({ file, tokens: rest });
+  }
+
+  const numberHeads = [...groups.keys()].filter(isNumber);
+  const makeSeries = numberHeads.length >= 2 && numberHeads.length < groups.size;
+  let series = null;
+
+  for (const [head, group] of groups) {
+    if (makeSeries && isNumber(head)) {
+      if (!series) {
+        series = new Map();
+        addUnique(level, seriesLabel(numberHeads), series);
       }
-  
-      return map;
+      place(series, head, group);
+    } else {
+      place(level, head, group);
     }
-
-    assignFiles(map, prefix){
-
-        for (let [key, value] of map) {
-            
-            if(value instanceof Map)
-            {
-                if(key == "root")
-                    this.assignFiles(value, '')
-                else
-                    this.assignFiles(value, prefix + key)
-    
-                // console.log(key);
-            }
-            else
-            {
-                let filename = prefix + key + value;
-                let found = this.file_list.find(it => it.name == filename)
-                // console.log(filename, found);
-
-                map.set(key, found);
-            }
-        }
-    }
-    }
-
-  function getFirstValueofMap(map) {
-    var key, value;
-  
-    if (map.size == 1) {
-      map.forEach((val, ke) => {
-        value = val;
-        key = ke;
-      });
-    }
-  
-    if (typeof value === "undefined") return { key: 0, value: [] };
-  
-    return { value: value, key: key };
-  }
-  
-  function getKeyValue(map) {
-    var key, value;
-  
-    if (map.size == 1) {
-      map.forEach((val, ke) => {
-        value = val;
-        key = ke;
-      });
-    }
-  
-    if (typeof value === "undefined") return { key: 0, value: [] };
-  
-    return { value: value, key: key };
-  }
-  
-  function arrange(map) {
-    let newMap = new Map(map);
-  
-    for (let [key, value] of map) {
-      if (value instanceof Map) {
-        let returned = arrange(value);
-  
-        if (returned.size === 1 && key !== "root") {
-          newMap.delete(key);
-          newMap.set(
-            key + getKeyValue(returned).key,
-            getKeyValue(returned).value
-          );
-        } else newMap.set(key, returned);
-      }
-    }
-  
-    return newMap;
   }
 
+  return level;
+}
 
-  
+// A token followed by a single file becomes a leaf, otherwise a sub cluster.
+function place(level, head, group) {
+  if (group.length === 1) {
+    addUnique(level, group[0].file.name, group[0].file);
+    return;
+  }
+
+  // Merge the tokens every item still shares into the cluster label.
+  let label = head;
+  let items = group;
+  while (
+    items.every((it) => it.tokens.length > 0) &&
+    items.every((it) => it.tokens[0] === items[0].tokens[0])
+  ) {
+    label += items[0].tokens[0];
+    items = items.map((it) => ({ file: it.file, tokens: it.tokens.slice(1) }));
+  }
+
+  addUnique(level, label, buildLevel(items));
+}
+
+function seriesLabel(numberHeads) {
+  const values = numberHeads.map(Number);
+  return `${Math.min(...values)}–${Math.max(...values)}`;
+}
+
+// Map keys must be unique, e.g. when the same file name is given twice.
+function addUnique(map, key, value) {
+  let unique = key;
+  for (let n = 2; map.has(unique); n++) unique = `${key} (${n})`;
+  map.set(unique, value);
+}
