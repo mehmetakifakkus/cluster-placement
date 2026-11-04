@@ -3,6 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [clusterBasedGA]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -11,7 +12,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -20,32 +21,44 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # react-scripts 4 does not run on Node 17+ (OpenSSL / postcss errors).
       - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 22
           cache: npm
 
       - run: npm ci
 
-      - name: Test
-        run: npm test -- --watchAll=false
-        env:
-          CI: true
+      - name: Unit and component tests
+        run: npm test
 
-      # CI=false so existing lint warnings do not fail the build.
       - name: Build
         run: npm run build
-        env:
-          CI: false
+
+      # Opens the production build under /cluster-placement/ in Chromium and
+      # fails on any page error, so a broken build is never published.
+      - name: Smoke test
+        run: |
+          npx playwright install --with-deps chromium
+          npm run smoke
+
+      - name: Upload smoke screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-screenshot
+          path: smoke-results/
+          if-no-files-found: ignore
 
       - uses: actions/configure-pages@v5
+        if: github.event_name != 'pull_request'
 
       - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
         with:
-          path: build
+          path: dist
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:

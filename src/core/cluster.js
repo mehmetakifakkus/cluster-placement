@@ -12,13 +12,14 @@
 // numbered series is laid out as one block.
 //
 // `arranged` is a Map with a single "root" key. Every value below it is either
-// a File (a leaf) or another Map (a sub cluster). Map keys are unique labels.
+// a file (a leaf; any object with a `name`) or another Map (a sub cluster).
+// Map keys are unique labels.
 
 export class FileCluster {
-  constructor(file_list) {
-    this.file_list = file_list;
+  constructor(fileList) {
+    this.fileList = fileList;
 
-    const items = file_list.map((file) => ({ file, tokens: tokenize(file.name) }));
+    const items = fileList.map((file) => ({ file, tokens: tokenize(file.name) }));
     this.arranged = new Map([['root', buildLevel(items)]]);
   }
 }
@@ -44,7 +45,7 @@ function buildLevel(items) {
     groups.get(head).push({ file, tokens: rest });
   }
 
-  const numberHeads = [...groups.keys()].filter(isNumber);
+  const numberHeads = Array.from(groups.keys()).filter(isNumber);
   const makeSeries = numberHeads.length >= 2 && numberHeads.length < groups.size;
   let series = null;
 

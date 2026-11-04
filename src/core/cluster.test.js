@@ -1,5 +1,5 @@
-import { FileCluster, tokenize } from './FileCluster';
-import { File } from '../File';
+import { describe, expect, test } from 'vitest';
+import { FileCluster, tokenize } from './cluster';
 
 // Turns the arranged Map into a plain object that is easy to compare:
 // { files: [names of leaf files], clusters: { key: <same shape> } }
@@ -13,7 +13,7 @@ function toTree(map) {
 }
 
 function cluster(names) {
-  const fc = new FileCluster(names.map((n) => new File(n, 1, 1)));
+  const fc = new FileCluster(names.map((n) => ({ name: n })));
   return toTree(fc.arranged.get('root'));
 }
 
@@ -62,7 +62,7 @@ describe('FileCluster', () => {
       [['x.png', 'x.png']],
       [['idea.docx', '5653.jpeg', '5660.jpeg', '5660_e1.psd', 'model1.3dm', 'modelmanu1.3dm']],
     ])('%j', (names) => {
-      const fc = new FileCluster(names.map((n) => new File(n, 1, 1)));
+      const fc = new FileCluster(names.map((n) => ({ name: n })));
       expect(allFileNames(fc.arranged).sort()).toEqual([...names].sort());
     });
 
