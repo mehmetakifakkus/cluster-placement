@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { EXAMPLES } from '../examples';
 
-const HOW_IT_WORKS = 'https://github.com/mehmetakifakkus/cluster-placement#readme';
+const HOW_IT_WORKS = 'https://mehmetakifakkus.github.io/projects/cluster-placement/';
 
 function Logo() {
   return (

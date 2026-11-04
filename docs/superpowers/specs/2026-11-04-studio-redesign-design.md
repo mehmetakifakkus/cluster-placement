@@ -77,7 +77,7 @@ için GA çalışmaz, dosya tek başına gösterilir.
 `/projects/cluster-placement/` adresinde, sitenin `default` düzeniyle; taslak C'deki dört
 adım. Görseller Stüdyo'nun SVG dışa aktarımıyla üretilir. Projeler kartı bu sayfaya,
 sayfadaki "Stüdyoyu aç" uygulamaya gider; Stüdyo başlığındaki "Nasıl çalışır?" bu sayfaya
-döner (sayfa hazır olana dek README'ye).
+döner.
 
 ## Test ve yayın
 
