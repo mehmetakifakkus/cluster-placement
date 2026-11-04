@@ -1,124 +1,92 @@
 # Cluster Placement: Genetik Algoritma ile Blok Yerleşimi
 
-Bu proje, dosyaları isimlerine göre **kümeleyip** her kümeyi ve içindeki dosyaları bir tuval üzerinde
-dikdörtgen bloklar olarak **sıkı ve düzenli** biçimde yerleştiren bir React uygulamasıdır.
-Yerleşimi **hiyerarşik bir genetik algoritma (GA)** bulur.
+Dosyaları adlarına göre **kümeleyip** her kümeyi ve içindeki dosyaları bir panoya **sıkı ve düzenli**
+biçimde yerleştiren bir web uygulaması. Yerleşimi **hiyerarşik bir genetik algoritma (GA)** bulur.
 
-**Canlı demo:** https://mehmetakifakkus.github.io/cluster-placement/
+**Stüdyo:** https://mehmetakifakkus.github.io/cluster-placement/
 
 Örnek kullanım: bir tasarımcının proje klasöründeki `design1.ai`, `renderdesign1.png`, `sketchv1.jpeg` gibi
-dosyaları, birbiriyle ilgili olanlar yan yana duracak şekilde bir panoya (mood board / galeri görünümü)
+dosyaları, birbiriyle ilgili olanlar yan yana duracak şekilde bir panoya (mood board, galeri görünümü)
 yerleştirmek.
+
+## Stüdyo'yu kullanmak
+
+1. **Dosyaları getirin.** Dosya ya da klasörü sol alana bırakın, "Dosya seç" / "Klasör seç" ile seçin
+   veya "Metin olarak yapıştır" ile her satıra `ad, genişlik, yükseklik` yazın. Görsellerin
+   çözünürlüğü tarayıcı tarafından okunur. Dosyalar hiçbir yere gönderilmez.
+2. **Eksik boyutları tamamlayın.** Tarayıcının boyutunu okuyamadığı dosyalar (.ai, .psd, .3dm…)
+   işaretlenir ve kare kabul edilir; isterseniz satıra boyut yazın.
+3. **Yerleşimi inceleyin.** Liste ya da Hedef kaydırıcısı değişince yerleşim kendiliğinden yenilenir.
+   Bir dosyaya ya da kümeye tıklayınca vurgulanır; sağda en iyi üç yerleşim arasında geçebilirsiniz.
+   "Yeniden üret" aynı ayarlarla yeni bir deneme yapar.
+4. **Dışa aktarın.** PNG, SVG ya da JSON (adlar ve koordinatlar) olarak indirin.
 
 ## Nasıl çalışır?
 
-### 1. Girdi (`src/App.js`)
-
-Soldaki metin kutusuna her satıra bir dosya yazılır:
-
-```
-isim, genişlik, yükseklik
-```
-
-```
-design1.ai, 1200, 1600
-renderdesign1.png, 800, 800
-sketchv1.jpeg, 800, 400
-```
-
-Boyut verilmezse dosya 1×1 kabul edilir.
-
-### 2. Boyutları sadeleştirme (`src/File.js`, `src/Utils/Ratios.js`)
-
-Her dosyanın çözünürlüğü küçük bir en-boy oranına indirilir (ör. 1200×1600 → 3×4). Sadeleşmiş oran
-10'u aşıyorsa en yakın "güzel" orana yuvarlanır. Böylece GA küçük bir ızgara üzerinde çalışır.
-
-### 3. İsme göre kümeleme (`src/Utils/FileCluster.js`)
-
-Dosya adları ortak önek ağacına (prefix tree) ayrılır:
-
-- `design1.ai`, `design2.ai`, `design3.ai` → `design` kümesi
-- `renderdesign1..4.png` → `renderdesign` kümesi
-- `sketchv1..3.jpeg` → `sketchv` kümesi
-
-Tek çocuklu dallar birleştirilir (`arrange`), sonuçta iç içe bir küme hiyerarşisi oluşur.
-
-### 4. Hiyerarşik genetik algoritma (`src/main.js`, `src/ga/`)
-
-- Her küme için ayrı bir `GABuilder` (10 kromozomluk havuz) oluşturulur. Alt kümeler, üst kümenin
-  içinde **tek bir blok** gibi davranır; bu bloğun boyutu alt kümenin en iyi yerleşiminin sınır kutusudur.
-- **Kromozom** (`Chromosome.js`): blokların konumlarından oluşan bir yerleşimdir. İlk blok (0,0)'a
-  konur; diğerleri daha önce yerleşmiş blokların sağ-üst veya sol-alt köşelerine rastgele yapıştırılır.
-  Çakışma olursa 30 kez yeniden denenir (`Block.changePosAbit2`).
-- **Evrim** (`GABuilder.evolve`, 5 nesil): havuzun kötü yarısı atılır, en iyi kromozom mutasyona
-  uğratılarak havuz yeniden doldurulur:
-  - `mutate5`: blokların yarısını yeniden yerleştirir
-  - `mutate6`: en küçük blokları yeniden yerleştirir
-
-### 5. Uygunluk fonksiyonu (`Chromosome.fitnessFunction`)
-
-İki ölçütün ağırlıklı ortalamasıdır:
-
-| Ölçüt | Tanım | Amaç |
-|-------|-------|------|
-| **f1, doluluk** | blok alanları toplamı / sınır kutusu alanı | boşluğu azaltmak |
-| **f2, en-boy oranı** | sınır kutusu oranının ~1.8'e yakınlığı | yatay, ekrana uygun bir düzen |
-
-Arayüzdeki **Fill ↔ 2x1** slider'ı bu iki ölçütün ağırlığını ayarlar (varsayılan: 80, oran ağırlıklı).
-
-### 6. Görselleştirme (`src/main.js → draw`, paper.js)
-
-- Sonuç `<canvas>` üzerinde renkli dikdörtgenler olarak çizilir.
-- Soldaki **Tree** bileşeni küme hiyerarşisini gösterir; bir kümeye tıklayınca o kümenin yerleşimi çizilir.
-- **prev / next** düğmeleriyle havuzdaki diğer kromozomlar ve fitness değerleri incelenebilir.
+1. **Oran:** Her dosyanın çözünürlüğü en fazla 10:10'luk küçük bir orana indirilir
+   (1200×1600 → 3:4, 1920×1080 → 9:5). GA bu küçük ızgarada çalışır.
+2. **Kümeleme:** Adlar token'lara ayrılır: her rakam dizisi tek token, diğer her karakter ayrı bir
+   token. Ortak önekle başlayan dosyalar aynı kümeye girer (`design1`, `design2` → `design`). Sayılar
+   bölünmez, bu yüzden `img2` ile `img10` kardeş kalır. Adlı kardeşlerin yanındaki numaralı dosyalar
+   bir seri kümesinde toplanır (`model1..3` → `1–3`).
+3. **Yerleşim (GA):** Her küme kendi bloklarını yerleştirir; alt kümeler, üst kümede sınır kutuları
+   büyüklüğünde tek blok olur. Bloklar büyükten küçüğe sıralanır; her blok daha önce yerleşmiş bir
+   bloğun sağ-üst ya da sol-alt köşesine, çakışmadan yapışır. 10 yerleşimlik havuz her nesilde
+   kötü yarısını atar ve en iyi yerleşimin mutasyonlarıyla dolar (5 nesil).
+4. **Uygunluk:** `(1 − w) · doluluk + w · oran puanı`. Doluluk, blok alanlarının sınır kutusuna oranı;
+   oran puanı, en-boy oranının ≈ 1.8'e yakınlığı. `w`, Hedef kaydırıcısıdır (varsayılan 50).
 
 ## Proje yapısı
 
 ```
 src/
-├── App.js               # Arayüz: metin girişi, slider, küme ağacı, tuval
-├── main.js              # Kümeleme + hiyerarşik GA kurulumu ve çizim
-├── File.js              # Dosya modeli ve oran sadeleştirme
-├── ga/
-│   ├── GABuilder.js     # Gen havuzu, seçilim ve evrim
-│   ├── Chromosome.js    # Yerleşim, mutasyonlar, uygunluk fonksiyonu
-│   └── Block.js         # Tek bir blok ve çakışmasız konumlandırma
-├── geometry/            # Point, Rectangle
-└── Utils/
-    ├── FileCluster.js   # İsim önekine göre kümeleme
-    ├── Ratios.js        # En yakın en-boy oranı tabloları
-    ├── Settings.js      # Paylaşılan ayarlar (slider değeri)
-    └── Utilities.js     # Yardımcı fonksiyonlar
+├── core/              # Algoritma: React'ten ve tarayıcıdan bağımsız
+│   ├── cluster.js     # Ada göre token tabanlı kümeleme
+│   ├── parse.js       # "ad, genişlik, yükseklik" satırlarını ayrıştırma
+│   ├── ratio.js       # Çözünürlüğü küçük orana indirme
+│   ├── geometry.js    # Dikdörtgen kesişimi, sınır kutusu, alan
+│   ├── ga.js          # Genetik algoritma
+│   ├── random.js      # Tohumlu rastgele sayı üreteci
+│   └── layout.js      # runLayout(): küme ağacı, konumlar, metrikler, alternatifler
+├── io/
+│   ├── readFiles.js   # Bırakılan dosya ve klasörleri okuma, görsel boyutu, küçük resim
+│   └── export.js      # SVG, PNG, JSON dışa aktarma
+├── ui/                # Stüdyo ekranı (React)
+│   ├── App.jsx        # Tek durum nesnesi, otomatik yeniden hesaplama
+│   ├── Header.jsx     # Örnekler, Yeniden üret, Dışa aktar
+│   ├── FilePanel.jsx  # Bırakma alanı, metin yapıştırma, dosya listesi
+│   ├── LayoutView.jsx # SVG tuval
+│   └── Inspector.jsx  # Kümeler, Hedef, metrikler, alternatifler
+├── examples.js        # Hazır örnek dosya listeleri
+└── styles.css
+scripts/smoke.mjs      # Üretim derlemesi için tarayıcı duman testi
 ```
 
-## Teknolojiler
+Tasarım kararları: [`docs/superpowers/specs/2026-11-04-studio-redesign-design.md`](docs/superpowers/specs/2026-11-04-studio-redesign-design.md)
 
-React 17 (Create React App), [paper.js](http://paperjs.org/) (çizim), antd, reactstrap ve bootstrap (arayüz).
+## Geliştirme
 
-## Çalıştırma
+Node 22.12 veya üzeri gerekir.
 
 ```bash
 npm install
 ```
 
 ```bash
-npm start
+npm run dev
 ```
 
-Uygulama [http://localhost:3000](http://localhost:3000) adresinde açılır. Metin kutusunu düzenleyip
-**RUN** düğmesine basarak yerleşimi oluşturabilirsiniz.
-
-> **Not:** react-scripts 4, Node 17 ve üzeri sürümlerde çalışmaz; yerelde Node 16 kullanın.
-> `clusterBasedGA` dalına yapılan her push, `.github/workflows/deploy-pages.yml` ile
-> derlenip GitHub Pages'e yayınlanır.
-
-Üretim derlemesi için:
+Testler (Vitest; algoritma, dosya okuma, dışa aktarma ve arayüz):
 
 ```bash
-npm run build
+npm test
 ```
 
-## Durum
+Üretim derlemesi ve duman testi (derlemeyi `/cluster-placement/` alt yolunda Chromium'da açar):
 
-Proje deneysel / prototip aşamasındadır. Henüz test yoktur ve kodda deneme amaçlı, yorum satırına
-alınmış kısımlar bulunmaktadır.
+```bash
+npm run build && npm run smoke
+```
+
+`clusterBasedGA` dalına yapılan her push, `.github/workflows/deploy-pages.yml` ile test edilip
+derlenir; duman testi geçerse GitHub Pages'e yayınlanır. PR'larda aynı adımlar yayın olmadan çalışır.

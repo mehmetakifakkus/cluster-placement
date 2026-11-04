@@ -10,6 +10,10 @@
 
 # production
 /build
+/dist
+
+# smoke test output
+/smoke-results
 
 # misc
 .DS_Store
