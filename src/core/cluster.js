@@ -13,7 +13,9 @@
 //
 // `arranged` is a Map with a single "root" key. Every value below it is either
 // a file (a leaf; any object with a `name`) or another Map (a sub cluster).
-// Map keys are unique labels.
+// Map keys are unique labels relative to their parent ("_e" under "5660").
+// Each cluster Map also carries `prefix`, the whole name prefix its files share
+// ("5660_e"), and a series Map has `series: true`.
 
 export class FileCluster {
   constructor(fileList) {
@@ -31,8 +33,9 @@ export function tokenize(name) {
 const isNumber = (token) => /^\d+$/.test(token);
 
 // Builds one level of the tree from items whose shared prefix is already used up.
-function buildLevel(items) {
+function buildLevel(items, prefix = '') {
   const level = new Map();
+  level.prefix = prefix;
   const groups = new Map(); // next token -> items continuing with that token
 
   for (const { file, tokens } of items) {
@@ -53,11 +56,13 @@ function buildLevel(items) {
     if (makeSeries && isNumber(head)) {
       if (!series) {
         series = new Map();
+        series.prefix = prefix;
+        series.series = true;
         addUnique(level, seriesLabel(numberHeads), series);
       }
-      place(series, head, group);
+      place(series, head, group, prefix);
     } else {
-      place(level, head, group);
+      place(level, head, group, prefix);
     }
   }
 
@@ -65,7 +70,7 @@ function buildLevel(items) {
 }
 
 // A token followed by a single file becomes a leaf, otherwise a sub cluster.
-function place(level, head, group) {
+function place(level, head, group, prefix) {
   if (group.length === 1) {
     addUnique(level, group[0].file.name, group[0].file);
     return;
@@ -82,7 +87,7 @@ function place(level, head, group) {
     items = items.map((it) => ({ file: it.file, tokens: it.tokens.slice(1) }));
   }
 
-  addUnique(level, label, buildLevel(items));
+  addUnique(level, label, buildLevel(items, prefix + label));
 }
 
 function seriesLabel(numberHeads) {
