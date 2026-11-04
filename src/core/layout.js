@@ -1,6 +1,6 @@
 import { FileCluster } from './cluster';
 import { evolveLayouts } from './ga';
-import { simplifyRatio } from './ratio';
+import { blockSize } from './ratio';
 import { area, boundsOf } from './geometry';
 
 // Cluster colors: light fill, strong stroke, dark text (4.5:1 on the fill).
@@ -30,7 +30,9 @@ export function runLayout(files, options = {}) {
   let nextId = 0;
   let nextColor = 0;
 
-  function build(map, title) {
+  function build(map, key) {
+    // Show the whole shared prefix ("5660_e", not "_e"); a series shows its range after it.
+    const title = map.series ? `${map.prefix}${key}` : map.prefix || key;
     const children = [];
     const ownFiles = [];
     const items = [];
@@ -41,7 +43,7 @@ export function runLayout(files, options = {}) {
         children.push(child);
         items.push({ w: child.width, h: child.height, ref: child });
       } else {
-        const r = simplifyRatio(value.width, value.height);
+        const r = blockSize(value.width, value.height);
         ownFiles.push(value);
         items.push({ w: r.w, h: r.h, ref: value });
       }
@@ -66,7 +68,7 @@ export function runLayout(files, options = {}) {
   if (root.files.length === 0 && root.children.length === 1) root = root.children[0];
 
   const fileArea = files.reduce((sum, f) => {
-    const r = simplifyRatio(f.width, f.height);
+    const r = blockSize(f.width, f.height);
     return sum + r.w * r.h;
   }, 0);
 

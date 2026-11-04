@@ -63,6 +63,25 @@ describe('runLayout', () => {
     });
   });
 
+  test('cluster titles show the whole shared prefix', () => {
+    const titles = [];
+    const walk = (node) => {
+      titles.push(node.title);
+      node.children.forEach(walk);
+    };
+    walk(layout(MIXED).tree);
+    walk(layout(parseFileList('brief.pdf\nbanner_web.png, 1920, 600\nbanner_mobile.png, 1080, 1920')).tree);
+    expect(titles).toEqual(expect.arrayContaining(['5653–5661', '5660', '5660_e', 'model', 'model1–2', 'modelmanu', 'banner_']));
+    expect(titles).not.toContain('_e');
+    expect(titles).not.toContain('anner_');
+  });
+
+  test('oversized blocks are capped in the layout', () => {
+    const { placements } = layout(parseFileList('a.jpg, 1920, 1080\nb.jpg, 4000, 3000')).alternatives[0];
+    const a = placements.find((p) => p.file.name === 'a.jpg');
+    expect(a.w * a.h).toBeLessThanOrEqual(20);
+  });
+
   test.each([1, 2, 3, 4, 5, 6, 7, 8])('seed %i: every file is placed once and no blocks overlap', (seed) => {
     for (const files of [DESIGN, MIXED]) {
       const result = layout(files, seed);
