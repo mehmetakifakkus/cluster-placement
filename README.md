@@ -23,12 +23,15 @@ yerleştirmek.
 
 ## Nasıl çalışır?
 
-1. **Oran:** Her dosyanın çözünürlüğü en fazla 10:10'luk küçük bir orana indirilir
-   (1200×1600 → 3:4, 1920×1080 → 9:5). GA bu küçük ızgarada çalışır.
+1. **Oran:** Her dosyanın çözünürlüğü küçük bir orana indirilir (1200×1600 → 3:4, 800×400 → 2:1);
+   GA bu küçük ızgarada çalışır. 20 hücreden büyük çıkan bloklar oranına en yakın, sığan boyuta
+   küçültülür (1920×1080 → 5:3, 1920×600 → 6:2); aksi halde tek bir dosya diğerlerinin birkaç
+   katı yer kaplayıp doldurulamayan boşluklar bırakıyordu.
 2. **Kümeleme:** Adlar token'lara ayrılır: her rakam dizisi tek token, diğer her karakter ayrı bir
    token. Ortak önekle başlayan dosyalar aynı kümeye girer (`design1`, `design2` → `design`). Sayılar
    bölünmez, bu yüzden `img2` ile `img10` kardeş kalır. Adlı kardeşlerin yanındaki numaralı dosyalar
-   bir seri kümesinde toplanır (`model1..3` → `1–3`).
+   bir seri kümesinde toplanır (`model1..3` → `model1–3`). Kümeler ortak öneklerinin tamamıyla
+   adlandırılır (`5660_e`, `banner_`).
 3. **Yerleşim (GA):** Her küme kendi bloklarını yerleştirir; alt kümeler, üst kümede sınır kutuları
    büyüklüğünde tek blok olur. Bloklar büyükten küçüğe sıralanır; her blok daha önce yerleşmiş bir
    bloğun sağ-üst ya da sol-alt köşesine, çakışmadan yapışır. 10 yerleşimlik havuz her nesilde
@@ -43,7 +46,7 @@ src/
 ├── core/              # Algoritma: React'ten ve tarayıcıdan bağımsız
 │   ├── cluster.js     # Ada göre token tabanlı kümeleme
 │   ├── parse.js       # "ad, genişlik, yükseklik" satırlarını ayrıştırma
-│   ├── ratio.js       # Çözünürlüğü küçük orana indirme
+│   ├── ratio.js       # Çözünürlüğü küçük orana ve blok boyutuna indirme
 │   ├── geometry.js    # Dikdörtgen kesişimi, sınır kutusu, alan
 │   ├── ga.js          # Genetik algoritma
 │   ├── random.js      # Tohumlu rastgele sayı üreteci

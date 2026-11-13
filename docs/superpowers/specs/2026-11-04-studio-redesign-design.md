@@ -30,7 +30,8 @@ Uygulama iki kitleye hizmet eder:
 - `src/core/` algoritma; React ve tarayıcıdan bağımsız.
   - `cluster.js`: token tabanlı ad kümeleme (eski `FileCluster`, aynen).
   - `parse.js`: `ad, genişlik, yükseklik` satırlarını ayrıştırma.
-  - `ratio.js`: çözünürlüğü en fazla 10:10'luk bir orana indirme.
+  - `ratio.js`: çözünürlüğü küçük bir orana indirme; 20 hücreyi aşan bloklar oranına en yakın
+    sığan boyuta küçültülür (2026-11-04 eki: 80 rastgele sette ortalama doluluk %67.4 → %69.6).
   - `geometry.js`: dikdörtgen kesişimi, sınır kutusu, alan (paper.js yerine).
   - `ga.js`: blokları yerleştiren genetik algoritma (eski `Block`, `Chromosome`,
     `GABuilder` mantığı tek modülde).
